@@ -1,22 +1,25 @@
 package clases;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.List;
-
 public class Producto {
     private String nombreproducto;
     private int cantidad;
     private double precio;
+    private int id;
 
-    public Producto(String productos, int cantidad, double precio) {
-        this.nombreproducto = productos;
+    public Producto(String nombreproducto, int cantidad, double precio) {
+        this.nombreproducto = nombreproducto;
         this.cantidad = cantidad;
         this.precio = precio;
     }
-
+    public Producto(int id, String nombreproducto, int cantidad, double precio) {
+        this.id = id;
+        this.nombreproducto = nombreproducto;
+        this.cantidad = cantidad;
+        this.precio = precio;
+    }
+    public int getId() {
+        return id;
+    }
     public String getNombreproducto() {
         return nombreproducto;
     }

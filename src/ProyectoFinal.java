@@ -41,34 +41,38 @@ public class ProyectoFinal {
             System.out.println("4. Hacer Venta");
             System.out.println("5. Lista Ventas");
             System.out.println("6. Salir");
-            System.out.println("Seleccione una opcion: ");
+            System.out.print("Seleccione una opcion: ");
             opc = sc.nextInt();
+            switch (opc)
+            {
+                case 1:
+                    System.out.println("Lista de Clientes");
+                   util.obtenerDatos(conn);
+                    System.out.println();
+                    break;
+                case 2:
+                    System.out.println("Registrar Productos");
+                    Producto prod1 = new Producto("Cualquiera",1234,1234.5);
+                    util.insetarDatosproducto(prod1, conn);
+                    break;
+                case 3:
+                    System.out.println("Lista de Productos");
+                    util.obtenerDatosproducto(conn);
+                    break;
+                case 4:
+                    System.out.println("Hacer Venta");
+                    break;
+                case 5:
+                    System.out.println("Lista de Ventas");
+                    break;
+                case 6:
+                    System.out.println("Salir");
+                    break;
+                default:
+                    System.out.println("Opcion no valida");
+                    break;
+            }
+        }while (opc != 6);
 
-        }while (opc != 4);
-        switch (opc)
-        {
-        case 1:
-            System.out.println("Lista de Clientes");
-            break;
-        case 2:
-            System.out.println("Registrar Productos");
-
-            break;
-        case 3:
-            System.out.println("Lista de Productos");
-            break;
-        case 4:
-            System.out.println("Hacer Venta");
-            break;
-        case 5:
-            System.out.println("Lista de Ventas");
-            break;
-        case 6:
-            System.out.println("Salir");
-            break;
-        default:
-            System.out.println("Opcion no valida");
-            break;
-        }
     }
 }

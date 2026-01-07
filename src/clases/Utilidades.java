@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 
 public class Utilidades {
     public Connection getConnection(){
-        String url = "jdbc:mysql://localhost:3306/Cliente";
+        String url = "jdbc:mysql://localhost:3306/cliente";
         String user = "root";
         String passwd = "sasa";
 
@@ -44,8 +44,30 @@ public class Utilidades {
             ex.printStackTrace();
         }
     }
+    public void insetarDatosproducto(Producto producto, Connection conn){
+        String sql = "INSERT INTO producto (nombre, cantidad, precio) VALUES (?,?,?)";
+        try{
+
+            PreparedStatement ps =conn.prepareStatement(sql);
+            ps.setString(1,producto.getNombreproducto());
+            ps.setInt(2,producto.getCantidad());
+            ps.setDouble(3,producto.getPrecio());
+
+            int resultado = ps.executeUpdate();
+
+            if(resultado > 0 ){
+                System.out.println("El producto se ha insertado correctamente..");
+            }else {
+                System.out.println("El Cliente no se inserto..");
+            }
+
+        } catch(Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
     public void obtenerDatos(Connection conn){
-        String sql = "SELECT * FROM Cliente.cliente "; //WHERE identificacion = \"1233\" ";
+        String sql = "SELECT * FROM cliente.cliente "; //WHERE identificacion = \"1233\" ";
         try{
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery(sql);
@@ -61,6 +83,29 @@ public class Utilidades {
                         rs.getString(4),
                         rs.getString(5));
                 System.out.println(cli.toString());
+            }
+
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void obtenerDatosproducto(Connection conn){
+        String sql = "SELECT * FROM cliente.producto "; //WHERE identificacion = \"1233\" ";
+        try{
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery(sql);
+            while(rs.next()){
+                /*Cliente cli = new Cliente (rs.getInt("idcliente"),
+                        rs.getString("nombre"),
+                        rs.getString("apellido"),
+                        rs.getString("correo"),
+                        rs.getString("identificacion"));*/
+                Producto pro = new Producto (rs.getInt(1),
+                        rs.getString(2),
+                        rs.getInt(3),
+                        rs.getDouble(4))
+                System.out.println();
             }
 
         } catch(Exception ex) {
