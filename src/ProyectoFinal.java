@@ -4,7 +4,6 @@ import clases.Utilidades;
 
 import java.sql.Connection;
 import java.util.Scanner;
-import java.sql.PreparedStatement;
 
 public class ProyectoFinal {
     public static void main(String[] args) {
@@ -36,13 +35,15 @@ public class ProyectoFinal {
         do {
             System.out.println("-----Menu de opciones-----");
             System.out.println("1. Lista Clientes");
-            System.out.println("2. Registrar productos");
-            System.out.println("3. Lista Productos");
-            System.out.println("4. Hacer Venta");
-            System.out.println("5. Lista Ventas");
-            System.out.println("6. Salir");
+            System.out.println("2. Registrar producto");
+            System.out.println("3. Eliminar producto");
+            System.out.println("4. Lista Productos");
+            System.out.println("5. Hacer Venta");
+            System.out.println("6. Lista Ventas");
+            System.out.println("7. Salir");
             System.out.print("Seleccione una opcion: ");
             opc = sc.nextInt();
+            sc.nextLine(); // Limpiar el buffer
             switch (opc)
             {
                 case 1:
@@ -51,28 +52,45 @@ public class ProyectoFinal {
                     System.out.println();
                     break;
                 case 2:
-                    System.out.println("Registrar Productos");
-                    Producto prod1 = new Producto("Cualquiera",1234,1234.5);
+                    System.out.println("Registrar Producto");
+                    Producto prod1 = new Producto();
+                    System.out.println("Ingrese nombre del producto: ");
+                    String nombreprod = sc.nextLine();
+                    prod1.setNombreproducto(nombreprod);
+                    System.out.println("Ingrese cantidad del producto: ");
+                    int cantidadprod = sc.nextInt();
+                    prod1.setCantidad(cantidadprod);
+                    System.out.println("Ingrese precio del producto: ");
+                    double precioprod = sc.nextDouble();
+                    prod1.setPrecio(precioprod);
                     util.insetarDatosproducto(prod1, conn);
+                    sc.nextLine(); // Limpiar el buffer
                     break;
                 case 3:
+                    System.out.println("Eliminar Producto");
+                    System.out.println("Ingrese el ID del producto a eliminar: ");
+                    int id = sc.nextInt();
+                    util.eliminaDatosproducto(id, conn);
+                    sc.nextLine(); // Limpiar el buffer
+                    break;
+                case 4:
                     System.out.println("Lista de Productos");
                     util.obtenerDatosproducto(conn);
                     break;
-                case 4:
+                case 5:
                     System.out.println("Hacer Venta");
                     break;
-                case 5:
+                case 6:
                     System.out.println("Lista de Ventas");
                     break;
-                case 6:
+                case 7:
                     System.out.println("Salir");
                     break;
                 default:
                     System.out.println("Opcion no valida");
                     break;
             }
-        }while (opc != 6);
+        }while (opc != 7);
 
     }
 }

@@ -92,9 +92,9 @@ public class Utilidades {
 
     public void obtenerDatosproducto(Connection conn){
         String sql = "SELECT * FROM cliente.producto "; //WHERE identificacion = \"1233\" ";
-        try{
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery(sql);
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery(sql)){
+
             while(rs.next()){
                 /*Cliente cli = new Cliente (rs.getInt("idcliente"),
                         rs.getString("nombre"),
@@ -104,8 +104,8 @@ public class Utilidades {
                 Producto pro = new Producto (rs.getInt(1),
                         rs.getString(2),
                         rs.getInt(3),
-                        rs.getDouble(4))
-                System.out.println();
+                        rs.getDouble(4));
+                System.out.println(pro.toString());
             }
 
         } catch(Exception ex) {
@@ -148,5 +148,39 @@ public class Utilidades {
             ex.printStackTrace();
         }
     }
+
+        public void eliminaDatosproducto(int id, Connection conn) {
+            String sqlDelete = "DELETE FROM producto WHERE idproducto = ?";
+            // Esta consulta recorre los IDs siguientes restándoles 1
+            String sqlUpdate = "UPDATE producto SET idproducto = idproducto - 1 WHERE idproducto > ?";
+            // Este comando fuerza a MySQL a resetear el contador al siguiente número disponible real
+            String sqlResetCounter = "ALTER TABLE producto AUTO_INCREMENT = 1";
+
+            try {
+                // 1. Intentar eliminar el producto
+                PreparedStatement psDelete = conn.prepareStatement(sqlDelete);
+                psDelete.setInt(1, id);
+                int resultado = psDelete.executeUpdate();
+
+                if (resultado > 0) {
+                    System.out.println("El producto se ha eliminado correctamente.");
+
+                    // 2. Si se eliminó, reordenar los IDs siguientes
+                    PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
+                    psUpdate.setInt(1, id);
+                    psUpdate.executeUpdate();
+                    // 3. Resetear el contador para que el SIGUIENTE registro no pegue saltos (ej: no vaya al 8)
+                    java.sql.Statement stmt = conn.createStatement();
+                    stmt.executeUpdate(sqlResetCounter);
+                    System.out.println("Se han reordenado los índices de los productos siguientes.");
+
+                } else {
+                    System.out.println("El producto no se ha eliminado (no existe ese ID).");
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
 }
 

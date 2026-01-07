@@ -6,6 +6,9 @@ public class Producto {
     private double precio;
     private int id;
 
+    public Producto() {
+    }
+
     public Producto(String nombreproducto, int cantidad, double precio) {
         this.nombreproducto = nombreproducto;
         this.cantidad = cantidad;
@@ -40,9 +43,17 @@ public class Producto {
         return precio;
     }
 
-    public void setPrecio(float precio) {
+    public void setPrecio(double precio) {
         this.precio = precio;
     }
 
+    public String toString() {
+        return "Producto{" +
+                "id=" + id +
+                ", nombreproducto='" + nombreproducto + '\'' +
+                ", cantidad=" + cantidad +
+                ", precio=" + precio +
+                '}';
+    }
 
 }
