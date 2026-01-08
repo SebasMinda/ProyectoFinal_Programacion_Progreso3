@@ -44,21 +44,22 @@ public class Utilidades {
             ex.printStackTrace();
         }
     }
-    public void insetarDatosproducto(Producto producto, Connection conn){
-        String sql = "INSERT INTO producto (nombre, cantidad, precio) VALUES (?,?,?)";
+    public void insetarDatosViaje(Viajes viaje, Connection conn){
+        // Cambio: tabla 'viajes' con columnas (destino, cantidad, precio)
+        String sql = "INSERT INTO viajes (destino, cantidad, precio) VALUES (?,?,?)";
         try{
 
             PreparedStatement ps =conn.prepareStatement(sql);
-            ps.setString(1,producto.getNombreproducto());
-            ps.setInt(2,producto.getCantidad());
-            ps.setDouble(3,producto.getPrecio());
+            ps.setString(1,viaje.getDestino());
+            ps.setInt(2,viaje.getCantidad());
+            ps.setDouble(3,viaje.getPrecio());
 
             int resultado = ps.executeUpdate();
 
             if(resultado > 0 ){
-                System.out.println("El producto se ha insertado correctamente..");
+                System.out.println("El viaje se ha insertado correctamente..");
             }else {
-                System.out.println("El Cliente no se inserto..");
+                System.out.println("El viaje no se inserto..");
             }
 
         } catch(Exception ex){
@@ -90,18 +91,14 @@ public class Utilidades {
         }
     }
 
-    public void obtenerDatosproducto(Connection conn){
-        String sql = "SELECT * FROM cliente.producto "; //WHERE identificacion = \"1233\" ";
+    public void obtenerDatosViaje(Connection conn){
+        // Cambio: leer desde la tabla 'viajes'
+        String sql = "SELECT * FROM cliente.viajes ";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery(sql)){
 
             while(rs.next()){
-                /*Cliente cli = new Cliente (rs.getInt("idcliente"),
-                        rs.getString("nombre"),
-                        rs.getString("apellido"),
-                        rs.getString("correo"),
-                        rs.getString("identificacion"));*/
-                Producto pro = new Producto (rs.getInt(1),
+                Viajes pro = new Viajes(rs.getInt(1),
                         rs.getString(2),
                         rs.getInt(3),
                         rs.getDouble(4));
@@ -149,21 +146,21 @@ public class Utilidades {
         }
     }
 
-        public void eliminaDatosproducto(int id, Connection conn) {
-            String sqlDelete = "DELETE FROM producto WHERE idproducto = ?";
+        public void eliminaDatosViaje(int id, Connection conn) {
+            String sqlDelete = "DELETE FROM viajes WHERE id = ?";
             // Esta consulta recorre los IDs siguientes restándoles 1
-            String sqlUpdate = "UPDATE producto SET idproducto = idproducto - 1 WHERE idproducto > ?";
+            String sqlUpdate = "UPDATE viajes SET id = id - 1 WHERE id > ?";
             // Este comando fuerza a MySQL a resetear el contador al siguiente número disponible real
-            String sqlResetCounter = "ALTER TABLE producto AUTO_INCREMENT = 1";
+            String sqlResetCounter = "ALTER TABLE viajes AUTO_INCREMENT = 1";
 
             try {
-                // 1. Intentar eliminar el producto
+                // 1. Intentar eliminar el viaje
                 PreparedStatement psDelete = conn.prepareStatement(sqlDelete);
                 psDelete.setInt(1, id);
                 int resultado = psDelete.executeUpdate();
 
                 if (resultado > 0) {
-                    System.out.println("El producto se ha eliminado correctamente.");
+                    System.out.println("El viaje se ha eliminado correctamente.");
 
                     // 2. Si se eliminó, reordenar los IDs siguientes
                     PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
@@ -172,10 +169,50 @@ public class Utilidades {
                     // 3. Resetear el contador para que el SIGUIENTE registro no pegue saltos (ej: no vaya al 8)
                     java.sql.Statement stmt = conn.createStatement();
                     stmt.executeUpdate(sqlResetCounter);
-                    System.out.println("Se han reordenado los índices de los productos siguientes.");
+                    System.out.println("Se han reordenado los índices de los viajes siguientes.");
 
                 } else {
-                    System.out.println("El producto no se ha eliminado (no existe ese ID).");
+                    System.out.println("El viaje no se ha eliminado (no existe ese ID).");
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        public void reservarAsientosViaje(int idViaje, int cantidad, int idCliente, Connection conn) {
+            if (cantidad <= 0) {
+                System.out.println("La cantidad a reservar debe ser mayor que 0.");
+                return;
+            }
+
+            String sqlCheck = "SELECT cantidad FROM viajes WHERE id = ?";
+            String sqlUpdate = "UPDATE viajes SET cantidad = cantidad - ? WHERE id = ? AND cantidad >= ?";
+
+            try (PreparedStatement psCheck = conn.prepareStatement(sqlCheck)) {
+                psCheck.setInt(1, idViaje);
+                try (ResultSet rs = psCheck.executeQuery()) {
+                    if (!rs.next()) {
+                        System.out.println("No existe el viaje con id " + idViaje);
+                        return;
+                    }
+                    int disponibles = rs.getInt(1);
+                    if (disponibles < cantidad) {
+                        System.out.println("No hay suficientes asientos disponibles. Disponibles: " + disponibles);
+                        return;
+                    }
+                }
+
+                PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
+                psUpdate.setInt(1, cantidad);
+                psUpdate.setInt(2, idViaje);
+                psUpdate.setInt(3, cantidad);
+
+                int actualizado = psUpdate.executeUpdate();
+                if (actualizado > 0) {
+                    System.out.println("Reserva realizada correctamente: cliente " + idCliente + ", viaje " + idViaje + ", asientos " + cantidad);
+                } else {
+                    System.out.println("No se pudo completar la reserva. Intente nuevamente.");
                 }
 
             } catch (Exception ex) {
@@ -183,4 +220,3 @@ public class Utilidades {
             }
         }
 }
-

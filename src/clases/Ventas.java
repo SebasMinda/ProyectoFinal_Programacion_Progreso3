@@ -2,23 +2,22 @@ package clases;
 
 import java.util.List;
 
-public class Ventas
-{
-private int cantidadproducto;
-private float totalVenta;
-private List<String> productosVendidos;
+public class Ventas {
+    private int cantidadViajes;
+    private float totalVenta;
+    private List<String> viajesVendidos;
 
-    public Ventas(int cantidadproducto, float totalVenta) {
-        this.cantidadproducto = cantidadproducto;
+    public Ventas(int cantidadViajes, float totalVenta) {
+        this.cantidadViajes = cantidadViajes;
         this.totalVenta = totalVenta;
     }
 
-    public int getCantidadproducto() {
-        return cantidadproducto;
+    public int getCantidadViajes() {
+        return cantidadViajes;
     }
 
-    public void setCantidadproducto(int cantidadproducto) {
-        this.cantidadproducto = cantidadproducto;
+    public void setCantidadViajes(int cantidadViajes) {
+        this.cantidadViajes = cantidadViajes;
     }
 
     public float getTotalVenta() {
@@ -27,5 +26,13 @@ private List<String> productosVendidos;
 
     public void setTotalVenta(float totalVenta) {
         this.totalVenta = totalVenta;
+    }
+
+    public List<String> getViajesVendidos() {
+        return viajesVendidos;
+    }
+
+    public void setViajesVendidos(List<String> viajesVendidos) {
+        this.viajesVendidos = viajesVendidos;
     }
 }
