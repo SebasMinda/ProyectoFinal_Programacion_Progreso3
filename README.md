@@ -112,12 +112,22 @@ private static final String PASSWORD = "tu_contraseña";
 
 #### Usando línea de comandos:
 
+**En Linux/Mac:**
 ```bash
 # Compilar
 javac -cp ".:mysql-connector-j-9.5.0/mysql-connector-j-9.5.0.jar" src/ProyectoFinal.java src/clases/*.java
 
 # Ejecutar
 java -cp ".:mysql-connector-j-9.5.0/mysql-connector-j-9.5.0.jar:src" ProyectoFinal
+```
+
+**En Windows:**
+```cmd
+# Compilar
+javac -cp ".;mysql-connector-j-9.5.0\mysql-connector-j-9.5.0.jar" src\ProyectoFinal.java src\clases\*.java
+
+# Ejecutar
+java -cp ".;mysql-connector-j-9.5.0\mysql-connector-j-9.5.0.jar;src" ProyectoFinal
 ```
 
 #### Usando un IDE:
