@@ -54,7 +54,7 @@ public class ProyectoFinal {
                     System.out.print("Opcion: ");
                     opcAsiento = sc.nextInt();
                     sc.nextLine();
-
+                    
                     int cantidadDeseada = 0;
                     if (opcAsiento == 1) {
                         System.out.println("Ha seleccionado Clase Economica.");
@@ -77,7 +77,7 @@ public class ProyectoFinal {
                     } else {
                         System.out.println("Opcion no valida");
                     }
-
+                    
                     if (cantidadDeseada > 0) {
                         // Llamamos a reservarAsientosViaje pasando el tipo de asiento elegido
                         util.reservarAsientosViaje(idVuelo, cantidadDeseada, cliente1.getId(), opcAsiento, conn);
@@ -159,14 +159,14 @@ public class ProyectoFinal {
                                     int idClienteAdmin = sc.nextInt();
                                     System.out.print("Ingrese ID del viaje a reservar: ");
                                     int idViajeAdmin = sc.nextInt();
-
+                                    
                                     System.out.println("Seleccione la clase de asiento:");
                                     System.out.println("1. Clase Economica");
                                     System.out.println("2. Clase Premium");
                                     System.out.print("Opcion: ");
                                     int opcAsientoAdmin = sc.nextInt();
                                     sc.nextLine(); // limpiar buffer
-
+                                    
                                     System.out.print("Ingrese cantidad de asientos a reservar: ");
                                     int asientos = sc.nextInt();
                                     sc.nextLine(); // limpiar buffer
