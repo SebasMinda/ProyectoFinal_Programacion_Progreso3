@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Timestamp;
 
 public class Utilidades {
     public Connection getConnection(){
@@ -25,14 +27,19 @@ public class Utilidades {
     public void insetarDatos(Cliente cliente, Connection conn){
         // Se agregaron columnas asientosClaseEconomica, asientosClasePremium y precio al INSERT
         String sql = "INSERT INTO cliente (nombre, apellido, correo, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium) VALUES (?,?,?,?,?,?,?)";
-        try{
+        try(PreparedStatement ps = conn.prepareStatement(sql)){
 
-            PreparedStatement ps =conn.prepareStatement(sql);
             ps.setString(1,cliente.getNombre());
             ps.setString(2,cliente.getApellido());
             ps.setString(3,cliente.getEmail());
             ps.setString(4,cliente.getIdentificacion());
-            ps.setInt(5, cliente.getAsientosComprados());
+
+            int totalAsientos = cliente.getAsientosComprados();
+            if (totalAsientos <= 0) {
+                totalAsientos = cliente.getAsientosClaseEconomica() + cliente.getAsientosClasePremium();
+            }
+
+            ps.setInt(5, totalAsientos);
             ps.setInt(6, cliente.getAsientosClaseEconomica());
             ps.setInt(7, cliente.getAsientosClasePremium());
 
@@ -49,21 +56,17 @@ public class Utilidades {
         }
     }
     public void obtenerDatos(Connection conn){
-        String sql = "SELECT * FROM cliente.cliente "; //WHERE identificacion = \"1233\" ";
-        try{
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery(sql);
+        // Seleccionamos columnas explícitas para evitar problemas con el orden
+        String sql = "SELECT idcliente, nombre, apellido, correo, identificacion FROM cliente";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()){
+
             while(rs.next()){
-                /*Cliente cli = new Cliente (rs.getInt("idcliente"),
+                Cliente cli = new Cliente (rs.getInt("idcliente"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
                         rs.getString("correo"),
-                        rs.getString("identificacion"));*/
-                Cliente cli = new Cliente (rs.getInt(1),
-                        rs.getString(2),
-                        rs.getString(3),
-                        rs.getString(4),
-                        rs.getString(5));
+                        rs.getString("identificacion"));
                 System.out.println(cli.toString());
             }
 
@@ -72,11 +75,10 @@ public class Utilidades {
         }
     }
     public void insetarDatosViaje(Viajes viaje, Connection conn){
-        // Cambio: tabla 'viajes' con columnas (destino, cantidad, precio)
+        // Cambio: tabla 'viajes' con columnas (origen, destino, cantidadTotal, asientosvip, asientosnormal, precioEconomica, precioPremium, ganancias)
         String sql = "INSERT INTO viajes (origen, destino, cantidadTotal, asientosvip, asientosnormal, precioEconomica, precioPremium, ganancias) VALUES (?,?,?,?,?,?,?,?)";
-        try{
+        try(PreparedStatement ps = conn.prepareStatement(sql)){
 
-            PreparedStatement ps =conn.prepareStatement(sql);
             ps.setString(1, viaje.getOrigen());
             ps.setString(2, viaje.getDestino());
             ps.setInt(3, viaje.getCantidadTotal());
@@ -102,20 +104,21 @@ public class Utilidades {
 
 
     public void obtenerDatosViaje(Connection conn){
-        String sql = "SELECT * FROM cliente.viajes";
+        String sql = "SELECT idviaje, origen, destino, cantidadTotal, asientosvip, asientosnormal, precioEconomica, precioPremium, ganancias FROM viajes";
         try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery(sql)){
+             ResultSet rs = ps.executeQuery()){
 
             while(rs.next()){
-                Viajes vjs = new Viajes (rs.getInt(1),
-                        rs.getString(3),
-                        rs.getString(2),
-                        rs.getInt(4),
-                        rs.getInt(5),
-                        rs.getInt(6),
-                        rs.getDouble(7),
-                        rs.getDouble(8),
-                        rs.getDouble(9));
+                // Corregido: pasar primero ORIGEN y luego DESTINO al constructor
+                Viajes vjs = new Viajes (rs.getInt("idviaje"),
+                        rs.getString("origen"),
+                        rs.getString("destino"),
+                        rs.getInt("cantidadTotal"),
+                        rs.getInt("asientosvip"),
+                        rs.getInt("asientosnormal"),
+                        rs.getDouble("precioEconomica"),
+                        rs.getDouble("precioPremium"),
+                        rs.getDouble("ganancias"));
 
                 System.out.println(vjs.toString());
             }
@@ -125,21 +128,21 @@ public class Utilidades {
         }
     }
     public void obtenerDatosViajeCliente(Connection conn){
-        String sql = "SELECT * FROM cliente.viajes";
+        String sql = "SELECT idviaje, origen, destino, cantidadTotal, asientosvip, asientosnormal, precioEconomica, precioPremium FROM viajes";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()){
 
             while(rs.next()){
-                // Constructor: id, destino, origen, cantidadTotal, eco, prem, $eco, $prem
                 // BD: 1:id, 2:origen, 3:destino, 4:total, 5:vip, 6:normal, 7:$eco, 8:$prem
-                Viajes vjs1 = new Viajes (rs.getInt(1),
-                        rs.getString(3), // destino
-                        rs.getString(2), // origen
-                        rs.getInt(4),
-                        rs.getInt(6),    // Pasamos columna 6 (normal/eco) al parámetro Eco
-                        rs.getInt(5),    // Pasamos columna 5 (vip/prem) al parámetro Premium
-                        rs.getDouble(7),
-                        rs.getDouble(8));
+                // Corregido: pasar origen y destino en el orden correcto y asientos vip/normal en su posición
+                Viajes vjs1 = new Viajes (rs.getInt("idviaje"),
+                        rs.getString("origen"), // origen
+                        rs.getString("destino"), // destino
+                        rs.getInt("cantidadTotal"),
+                        rs.getInt("asientosvip"),    // columna vip -> premium en el constructor cliente
+                        rs.getInt("asientosnormal"),    // columna normal -> eco en el constructor cliente
+                        rs.getDouble("precioEconomica"),
+                        rs.getDouble("precioPremium"));
 
                 System.out.println(vjs1.toString2());
             }
@@ -217,11 +220,11 @@ public class Utilidades {
             }
         }
 
-        // Modificamos para aceptar tipoAsiento (1: Eco, 2: Premium)
-        public void reservarAsientosViaje(int idViaje, int cantidad, int idCliente, int tipoAsiento, Connection conn) {
+        // Ahora devuelve boolean y registra venta si la reserva es exitosa
+        public boolean reservarAsientosViaje(int idViaje, int cantidad, int idCliente, int tipoAsiento, Connection conn) {
             if (cantidad <= 0) {
                 System.out.println("La cantidad a reservar debe ser mayor que 0.");
-                return;
+                return false;
             }
 
             // Seleccionamos nombre de columna según tipo
@@ -238,30 +241,94 @@ public class Utilidades {
                 try (ResultSet rs = psCheck.executeQuery()) {
                     if (!rs.next()) {
                         System.out.println("No existe el viaje con id " + idViaje);
-                        return;
+                        return false;
                     }
                     int disponiblesCategoria = rs.getInt(1);
                     if (disponiblesCategoria < cantidad) {
                         System.out.println("No hay suficientes asientos disponibles en esa clase. Disponibles: " + disponiblesCategoria);
-                        return;
+                        return false;
                     }
                 }
 
-                PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate);
-                psUpdate.setInt(1, cantidad); // Restar al total
-                psUpdate.setInt(2, cantidad); // Restar a la categoría
-                psUpdate.setInt(3, idViaje);
-                psUpdate.setInt(4, cantidad); // Condición extra de seguridad
+                try (PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate)) {
+                    psUpdate.setInt(1, cantidad); // Restar al total
+                    psUpdate.setInt(2, cantidad); // Restar a la categoría
+                    psUpdate.setInt(3, idViaje);
+                    psUpdate.setInt(4, cantidad); // Condición extra de seguridad
 
-                int actualizado = psUpdate.executeUpdate();
-                if (actualizado > 0) {
-                    System.out.println("Reserva realizada correctamente. Disfrute su vuelo.");
-                } else {
-                    System.out.println("No se pudo completar la reserva. Verifique disponibilidad.");
+                    int actualizado = psUpdate.executeUpdate();
+                    if (actualizado > 0) {
+                        System.out.println("Reserva realizada correctamente. Disfrute su vuelo.");
+                        // calcular precio y registrar venta
+                        double precioUnit = obtenerPrecioPorClase(idViaje, tipoAsiento, conn);
+                        if (precioUnit >= 0) {
+                            double total = precioUnit * cantidad;
+                            String claseStr = (tipoAsiento == 1) ? "economica" : "premium";
+                            Ventas venta = new Ventas(idCliente, idViaje, cantidad, claseStr, total);
+                            insertarVenta(venta, conn);
+                        } else {
+                            System.out.println("No se pudo obtener el precio del viaje para registrar la venta.");
+                        }
+                        return true;
+                    } else {
+                        System.out.println("No se pudo completar la reserva. Verifique disponibilidad.");
+                        return false;
+                    }
                 }
 
             } catch (Exception ex) {
                 ex.printStackTrace();
+                return false;
             }
         }
+
+    // Nuevo método: obtener precio por clase para un viaje (devuelve -1 si no existe)
+    public double obtenerPrecioPorClase(int idViaje, int tipoAsiento, Connection conn) {
+        String sql = "SELECT precioEconomica, precioPremium FROM viajes WHERE idviaje = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idViaje);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    if (tipoAsiento == 1) return rs.getDouble("precioEconomica");
+                    else return rs.getDouble("precioPremium");
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return -1;
+    }
+
+    // Inserta una venta en la tabla 'ventas'. Asume columnas: idventa (AUTO_INCREMENT), idcliente, idviaje, cantidad, clase, total, fecha
+    public void insertarVenta(Ventas venta, Connection conn) {
+        String sql = "INSERT INTO ventas (idcliente, idviaje, cantidad, clase, total, fecha) VALUES (?,?,?,?,?,?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, venta.getIdCliente());
+            ps.setInt(2, venta.getIdViaje());
+            ps.setInt(3, venta.getCantidadAsientos());
+            ps.setString(4, venta.getClase());
+            ps.setDouble(5, venta.getTotalVenta());
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            ps.setTimestamp(6, now);
+            int res = ps.executeUpdate();
+            if (res > 0) System.out.println("Venta registrada correctamente.");
+            else System.out.println("No se pudo registrar la venta.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    // Lista las ventas registradas
+    public void obtenerVentas(Connection conn) {
+        String sql = "SELECT idventa, idcliente, idviaje, cantidad, clase, total, fecha FROM ventas";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Ventas v = new Ventas(rs.getInt("idventa"), rs.getInt("idcliente"), rs.getInt("idviaje"), rs.getInt("cantidad"), rs.getString("clase"), rs.getDouble("total"), rs.getTimestamp("fecha"));
+                System.out.println(v.toString());
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 }

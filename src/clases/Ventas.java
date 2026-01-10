@@ -1,38 +1,100 @@
 package clases;
 
-import java.util.List;
+import java.sql.Timestamp;
 
 public class Ventas {
-    private int cantidadViajes;
-    private float totalVenta;
-    private List<String> viajesVendidos;
+    private int idVenta;
+    private int idCliente;
+    private int idViaje;
+    private int cantidadAsientos;
+    private String clase; // "economica" o "premium"
+    private double totalVenta;
+    private Timestamp fechaVenta;
 
-    public Ventas(int cantidadViajes, float totalVenta) {
-        this.cantidadViajes = cantidadViajes;
+    // Constructor completo
+    public Ventas(int idVenta, int idCliente, int idViaje, int cantidadAsientos, String clase, double totalVenta, Timestamp fechaVenta) {
+        this.idVenta = idVenta;
+        this.idCliente = idCliente;
+        this.idViaje = idViaje;
+        this.cantidadAsientos = cantidadAsientos;
+        this.clase = clase;
         this.totalVenta = totalVenta;
+        this.fechaVenta = fechaVenta;
     }
 
-    public int getCantidadViajes() {
-        return cantidadViajes;
+    // Constructor sin id ni fecha (para insertar)
+    public Ventas(int idCliente, int idViaje, int cantidadAsientos, String clase, double totalVenta) {
+        this(0, idCliente, idViaje, cantidadAsientos, clase, totalVenta, null);
     }
 
-    public void setCantidadViajes(int cantidadViajes) {
-        this.cantidadViajes = cantidadViajes;
+    public Ventas() {
     }
 
-    public float getTotalVenta() {
+    public int getIdVenta() {
+        return idVenta;
+    }
+
+    public void setIdVenta(int idVenta) {
+        this.idVenta = idVenta;
+    }
+
+    public int getIdCliente() {
+        return idCliente;
+    }
+
+    public void setIdCliente(int idCliente) {
+        this.idCliente = idCliente;
+    }
+
+    public int getIdViaje() {
+        return idViaje;
+    }
+
+    public void setIdViaje(int idViaje) {
+        this.idViaje = idViaje;
+    }
+
+    public int getCantidadAsientos() {
+        return cantidadAsientos;
+    }
+
+    public void setCantidadAsientos(int cantidadAsientos) {
+        this.cantidadAsientos = cantidadAsientos;
+    }
+
+    public String getClase() {
+        return clase;
+    }
+
+    public void setClase(String clase) {
+        this.clase = clase;
+    }
+
+    public double getTotalVenta() {
         return totalVenta;
     }
 
-    public void setTotalVenta(float totalVenta) {
+    public void setTotalVenta(double totalVenta) {
         this.totalVenta = totalVenta;
     }
 
-    public List<String> getViajesVendidos() {
-        return viajesVendidos;
+    public Timestamp getFechaVenta() {
+        return fechaVenta;
     }
 
-    public void setViajesVendidos(List<String> viajesVendidos) {
-        this.viajesVendidos = viajesVendidos;
+    public void setFechaVenta(Timestamp fechaVenta) {
+        this.fechaVenta = fechaVenta;
+    }
+
+    public String toString() {
+        return "Venta{" +
+                "idVenta=" + idVenta +
+                ", idCliente=" + idCliente +
+                ", idViaje=" + idViaje +
+                ", cantidadAsientos=" + cantidadAsientos +
+                ", clase='" + clase + '\'' +
+                ", totalVenta=" + totalVenta +
+                ", fechaVenta=" + fechaVenta +
+                '}';
     }
 }

@@ -31,21 +31,29 @@ public class ProyectoFinal {
                 case 1:
                     System.out.println("Ingresando como cliente...");
                     Cliente cliente1 = new Cliente();
-                    System.out.println("Ingrese su nombre: ");
+                    System.out.print("Ingrese su nombre: ");
                     String nombre = sc.nextLine();
                     cliente1.setNombre(nombre);
-                    System.out.println("Ingrese su apellido: ");
+                    System.out.print("Ingrese su apellido: ");
                     String apellido = sc.nextLine();
                     cliente1.setApellido(apellido);
-                    System.out.println("Ingrese su correo electronico: ");
+                    System.out.print("Ingrese su correo electronico: ");
                     String email = sc.nextLine();
                     cliente1.setEmail(email);
-                    System.out.println("Ingrese su identificacion: ");
+                    System.out.print("Ingrese su identificacion: ");
                     String identificacion = sc.nextLine();
                     cliente1.setIdentificacion(identificacion);
+
+                    // Insertamos el cliente en la BD antes de reservar para obtener su id
+                    int nuevoIdCliente = util.insetarDatos(cliente1, conn);
+                    if (nuevoIdCliente <= 0) {
+                        System.out.println("No se pudo registrar el cliente. No se realizará la reserva.");
+                        break;
+                    }
+
                     System.out.println("Lista de Vuelos disponibles:");
                     util.obtenerDatosViajeCliente(conn);
-                    System.out.println("Ingrese el ID del vuelo que desea reservar: ");
+                    System.out.print("Ingrese el ID del vuelo que desea reservar: ");
                     int idVuelo = sc.nextInt();
                     int opcAsiento = 0;
                     System.out.println("Seleccione la clase de asiento:");
@@ -58,7 +66,7 @@ public class ProyectoFinal {
                     int cantidadDeseada = 0;
                     if (opcAsiento == 1) {
                         System.out.println("Ha seleccionado Clase Economica.");
-                        System.out.println("Cuantos asientos desea reservar en Clase Economica?");
+                        System.out.print("Cuantos asientos desea reservar en Clase Economica? ");
                         cantidadDeseada = sc.nextInt();
                         if (cantidadDeseada > 0) {
                             cliente1.setAsientosClaseEconomica(cantidadDeseada);
@@ -67,7 +75,7 @@ public class ProyectoFinal {
                         }
                     } else if (opcAsiento == 2) {
                         System.out.println("Ha seleccionado Clase Premium.");
-                        System.out.println("Cuantos asientos desea reservar en Clase Premium?");
+                        System.out.print("Cuantos asientos desea reservar en Clase Premium? ");
                         cantidadDeseada = sc.nextInt();
                         if (cantidadDeseada > 0) {
                             cliente1.setAsientosClasePremium(cantidadDeseada);
@@ -77,11 +85,16 @@ public class ProyectoFinal {
                     } else {
                         System.out.println("Opcion no valida");
                     }
-                    
+                    sc.nextLine();
+
                     if (cantidadDeseada > 0) {
                         // Llamamos a reservarAsientosViaje pasando el tipo de asiento elegido
-                        util.reservarAsientosViaje(idVuelo, cantidadDeseada, cliente1.getId(), opcAsiento, conn);
-                        util.insetarDatos(cliente1, conn);
+                        boolean exito = util.reservarAsientosViaje(idVuelo, cantidadDeseada, cliente1.getId(), opcAsiento, conn);
+                        if (exito) {
+                            System.out.println("Reserva y registro de venta completados correctamente.");
+                        } else {
+                            System.out.println("No se pudo completar la reserva.");
+                        }
                     }
                     break;
                 case 2:
@@ -171,14 +184,17 @@ public class ProyectoFinal {
                                     int asientos = sc.nextInt();
                                     sc.nextLine(); // limpiar buffer
 
-                                    // Se corrigió la llamada para incluir el tipo de asiento (1=Eco, 2=Premium)
-                                    util.reservarAsientosViaje(idViajeAdmin, asientos, idClienteAdmin, opcAsientoAdmin, conn);
+                                    boolean reservado = util.reservarAsientosViaje(idViajeAdmin, asientos, idClienteAdmin, opcAsientoAdmin, conn);
+                                    if (reservado) {
+                                        System.out.println("Reserva realizada y venta registrada (si corresponde).");
+                                    } else {
+                                        System.out.println("No se pudo completar la reserva.");
+                                    }
                                     System.out.println();
                                     break;
                                 case 6:
                                     System.out.println("Lista de Ventas");
-                                    // Por ahora mostramos mensaje; se puede implementar registro de ventas en BD
-                                    System.out.println("Funcionalidad de ventas no implementada completamente.");
+                                    util.obtenerVentas(conn);
                                     break;
                                 case 7:
                                     System.out.println("Volviendo al menu principal...");
