@@ -7,24 +7,31 @@ public class Ventas {
     private int idCliente;
     private int idViaje;
     private int cantidadAsientos;
-    private String clase; // "economica" o "premium"
+    private int asientosClaseEconomica; // Nuevo campo
+    private int asientosClasePremium;   // Nuevo campo
     private double totalVenta;
-    private Timestamp fechaVenta;
+    private Timestamp fecha;
 
     // Constructor completo
-    public Ventas(int idVenta, int idCliente, int idViaje, int cantidadAsientos, String clase, double totalVenta, Timestamp fechaVenta) {
+    public Ventas(int idVenta, int idCliente, int idViaje, int cantidadAsientos, int asientosClaseEconomica, int asientosClasePremium, double totalVenta, Timestamp fecha) {
         this.idVenta = idVenta;
         this.idCliente = idCliente;
         this.idViaje = idViaje;
         this.cantidadAsientos = cantidadAsientos;
-        this.clase = clase;
+        this.asientosClaseEconomica = asientosClaseEconomica;
+        this.asientosClasePremium = asientosClasePremium;
         this.totalVenta = totalVenta;
-        this.fechaVenta = fechaVenta;
+        this.fecha = fecha;
     }
 
-    // Constructor sin id ni fecha (para insertar)
-    public Ventas(int idCliente, int idViaje, int cantidadAsientos, String clase, double totalVenta) {
-        this(0, idCliente, idViaje, cantidadAsientos, clase, totalVenta, null);
+    // Constructor sin ID (para inserción)
+    public Ventas(int idCliente, int idViaje, int cantidadAsientos, int asientosClaseEconomica, int asientosClasePremium, double totalVenta) {
+        this.idCliente = idCliente;
+        this.idViaje = idViaje;
+        this.cantidadAsientos = cantidadAsientos;
+        this.asientosClaseEconomica = asientosClaseEconomica;
+        this.asientosClasePremium = asientosClasePremium;
+        this.totalVenta = totalVenta;
     }
 
     public Ventas() {
@@ -62,12 +69,20 @@ public class Ventas {
         this.cantidadAsientos = cantidadAsientos;
     }
 
-    public String getClase() {
-        return clase;
+    public int getAsientosClaseEconomica() {
+        return asientosClaseEconomica;
     }
 
-    public void setClase(String clase) {
-        this.clase = clase;
+    public void setAsientosClaseEconomica(int asientosClaseEconomica) {
+        this.asientosClaseEconomica = asientosClaseEconomica;
+    }
+
+    public int getAsientosClasePremium() {
+        return asientosClasePremium;
+    }
+
+    public void setAsientosClasePremium(int asientosClasePremium) {
+        this.asientosClasePremium = asientosClasePremium;
     }
 
     public double getTotalVenta() {
@@ -78,23 +93,24 @@ public class Ventas {
         this.totalVenta = totalVenta;
     }
 
-    public Timestamp getFechaVenta() {
-        return fechaVenta;
+    public Timestamp getFecha() {
+        return fecha;
     }
 
-    public void setFechaVenta(Timestamp fechaVenta) {
-        this.fechaVenta = fechaVenta;
+    public void setFecha(Timestamp fecha) {
+        this.fecha = fecha;
     }
 
     public String toString() {
-        return "Venta{" +
+        return "Ventas{" +
                 "idVenta=" + idVenta +
                 ", idCliente=" + idCliente +
                 ", idViaje=" + idViaje +
                 ", cantidadAsientos=" + cantidadAsientos +
-                ", clase='" + clase + '\'' +
+                ", asientosClaseEconomica=" + asientosClaseEconomica +
+                ", asientosClasePremium=" + asientosClasePremium +
                 ", totalVenta=" + totalVenta +
-                ", fechaVenta=" + fechaVenta +
+                ", fecha=" + fecha +
                 '}';
     }
 }

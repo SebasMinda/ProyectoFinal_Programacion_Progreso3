@@ -16,7 +16,9 @@ public class ProyectoFinal {
         } else {
             System.out.println("NO Conectado ...!!");
         }
+
         int opc;
+        Cliente cliente1 = new Cliente();
         do {
             System.out.println("-----Menu Principal-----");
             System.out.println("Seleccione una opcion:");
@@ -29,7 +31,6 @@ public class ProyectoFinal {
             switch (opc) {
                 case 1:
                     System.out.println("Ingresando como cliente...");
-                    Cliente cliente1 = new Cliente();
                     System.out.print("Ingrese su nombre: ");
                     String nombre = sc.nextLine();
                     cliente1.setNombre(nombre);
@@ -462,8 +463,10 @@ public class ProyectoFinal {
         cliente1.setAsientosClaseEconomica(cantidadEconomica);
         cliente1.setAsientosClasePremium(cantidadPremium);
         cliente1.setAsientosComprados(totalAsientosSeleccionados);
-        util.insetarDatos(cliente1, conn);
+        cliente1.setPrecio(totalPagar);
         System.out.println("Venta registrada");
+        util.insetarDatos(cliente1,conn);
+        util.insertarDatosVenta(idVuelo,cantidadEconomica,cantidadPremium,cliente1,conn);
         return 0;
     }
 }
