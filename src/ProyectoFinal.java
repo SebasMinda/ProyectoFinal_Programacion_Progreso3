@@ -111,33 +111,21 @@ public class ProyectoFinal {
                                     util.obtenerDatosViaje(conn);
                                     break;
                                 case 5:
-                                    System.out.println("Reservar vuelo");
-                                    System.out.println("Lista de Vuelos disponibles:");
-                                    util.obtenerDatosViaje(conn);
-                                    System.out.print("Ingrese ID del cliente: ");
-                                    int idClienteAdmin = sc.nextInt();
-                                    System.out.print("Ingrese ID del viaje a reservar: ");
-                                    int idViajeAdmin = sc.nextInt();
-
-                                    System.out.println("Seleccione la clase de asiento:");
-                                    System.out.println("1. Clase Economica");
-                                    System.out.println("2. Clase Premium");
-                                    System.out.print("Opcion: ");
-                                    int opcAsientoAdmin = sc.nextInt();
-                                    sc.nextLine(); // limpiar buffer
-
-                                    System.out.print("Ingrese cantidad de asientos a reservar: ");
-                                    int asientos = sc.nextInt();
-                                    sc.nextLine(); // limpiar buffer
-
-                                    boolean reservadoAdmin = util.reservarAsientosViaje(idViajeAdmin, asientos, idClienteAdmin, opcAsientoAdmin, conn);
-                                    if (reservadoAdmin) {
-                                        System.out.println("Reserva realizada y venta registrada (si corresponde).");
-                                    } else {
-                                        System.out.println("No se pudo completar la reserva.");
-                                    }
-                                    System.out.println();
-                                    break;
+                                    System.out.print("Ingrese su nombre: ");
+                                    nombre = sc.nextLine();
+                                    cliente1.setNombre(nombre);
+                                    System.out.print("Ingrese su apellido: ");
+                                    apellido = sc.nextLine();
+                                    cliente1.setApellido(apellido);
+                                    System.out.print("Ingrese su correo electronico: ");
+                                    email = sc.nextLine();
+                                    cliente1.setEmail(email);
+                                    System.out.print("Ingrese su identificacion: ");
+                                    identificacion = sc.nextLine();
+                                    cliente1.setIdentificacion(identificacion);
+                                    do {
+                                        volverALista = reservarAsientosCliente(sc, util, conn, cliente1);
+                                    } while (volverALista == 1);
                                 case 6:
                                     System.out.println("Lista de Ventas");
                                     util.obtenerVentas(conn);
