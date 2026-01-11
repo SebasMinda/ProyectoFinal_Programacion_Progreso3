@@ -11,16 +11,6 @@ public class Cliente {
     private int asientosClasePremium;
     private double precio; // agregado
 
-    public Cliente(String nombre, String apellido, String email, String identificacion) {
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.email = email;
-        this.identificacion = identificacion;
-        this.asientosComprados = 0;
-        this.asientosClaseEconomica = 0;
-        this.asientosClasePremium = 0;
-        this.precio = 0.0;
-    }
 
     public Cliente(int id, String nombre, String apellido, String email, String identificacion) {
         this.id = id;
@@ -121,63 +111,7 @@ public class Cliente {
         this.precio = precio;
     }
 
-    /**
-     * Incrementa la cantidad de asientos comprados por este cliente (suma global).
-     */
-    public void comprarAsientos(int cantidad) {
-        if (cantidad <= 0) return;
-        this.asientosComprados += cantidad;
-    }
 
-    public void comprarAsientosPorCategoria(String categoria, int cantidad) {
-        if (cantidad <= 0 || categoria == null) return;
-        String cat = categoria.trim().toLowerCase();
-        switch (cat) {
-            case "economica":
-            case "economía":
-                this.asientosClaseEconomica += cantidad;
-                break;
-            case "premium":
-            case "business":
-                this.asientosClasePremium += cantidad;
-                break;
-            default:
-                // si no reconoce la categoría, sumar a la cuenta general
-                this.asientosComprados += cantidad;
-                return;
-        }
-        this.asientosComprados = this.asientosClaseEconomica + this.asientosClasePremium;
-    }
-
-    /**
-     * Resta asientos comprados por categoría (por ejemplo, anulación). No permite negativos.
-     */
-    public void anularAsientosPorCategoria(String categoria, int cantidad) {
-        if (cantidad <= 0 || categoria == null) return;
-        String cat = categoria.trim().toLowerCase();
-        switch (cat) {
-            case "economica":
-            case "economía":
-                this.asientosClaseEconomica = Math.max(0, this.asientosClaseEconomica - cantidad);
-                break;
-            case "premium":
-            case "business":
-                this.asientosClasePremium = Math.max(0, this.asientosClasePremium - cantidad);
-                break;
-            default:
-                this.asientosComprados = Math.max(0, this.asientosComprados - cantidad);
-                return;
-        }
-        this.asientosComprados = this.asientosClaseEconomica + this.asientosClasePremium;
-    }
-
-    /**
-     * Resta asientos comprados (por ejemplo, anulación). No permite negativos.
-     */
-    public void anularAsientos(int cantidad) {
-        if (cantidad <= 0) return;
-        this.asientosComprados = Math.max(0, this.asientosComprados - cantidad);
-    }
 
     public String toString() {
         return "Cliente{" +

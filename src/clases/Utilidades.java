@@ -40,7 +40,7 @@ public class Utilidades {
             int resultado = ps.executeUpdate();
             if (resultado > 0) {
                 System.out.println("El Cliente se insertó correctamente.");
-                
+
                 // Recuperar ID para que las ventas se asocien bien
                 try (PreparedStatement psId = conn.prepareStatement("SELECT idcliente FROM cliente WHERE identificacion = ? ORDER BY idcliente DESC LIMIT 1")) {
                     psId.setString(1, cliente.getIdentificacion());
@@ -94,7 +94,7 @@ public class Utilidades {
 
     // Inserta viaje
     public void insetarDatosViaje(Viajes viaje, Connection conn){
-        String sql = "INSERT INTO viajes (origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium, ganancias) VALUES (?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO viajes (origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium, asientosvendidos,ganancias) VALUES (?,?,?,?,?,?,?,?,?)";
         try(PreparedStatement ps = conn.prepareStatement(sql)){
             ps.setString(1, viaje.getOrigen());
             ps.setString(2, viaje.getDestino());
@@ -103,7 +103,8 @@ public class Utilidades {
             ps.setInt(5, viaje.getAsientosClaseEconomica());
             ps.setDouble(6, viaje.getPrecioEconomica());
             ps.setDouble(7, viaje.getPrecioPremium());
-            ps.setDouble(8, viaje.getGanancias());
+            ps.setInt(8, 0);
+            ps.setDouble(9, viaje.getGanancias());
             int resultado = ps.executeUpdate();
             if(resultado > 0 ) System.out.println("El viaje se ha insertado correctamente..");
             else System.out.println("El viaje no se inserto..");
@@ -181,8 +182,8 @@ public class Utilidades {
     // Reserva combinada: cantidadEconomica y cantidadPremium pueden ser 0
     public void insertarDatosVenta(int idViaje, int cantidadEconomica, int cantidadPremium, Cliente cliente, Connection conn) {
         // Validaciones simples
-       String sqlCheck = "SELECT asientosClaseEconomica, asientosClasePremium, precioEconomica, precioPremium FROM viajes WHERE idviaje = ? FOR UPDATE";
-       String sqlUpdate = "UPDATE viajes SET cantidadTotal = cantidadTotal - ?, asientosClaseEconomica = asientosClaseEconomica - ?, asientosClasePremium = asientosClasePremium - ?, ganancias = ganancias + ? WHERE idviaje = ?";
+        String sqlCheck = "SELECT asientosClaseEconomica, asientosClasePremium, precioEconomica, precioPremium FROM viajes WHERE idviaje = ? FOR UPDATE";
+        String sqlUpdate = "UPDATE viajes SET cantidadTotal = cantidadTotal - ?, asientosClaseEconomica = asientosClaseEconomica - ?, asientosClasePremium = asientosClasePremium - ?, asientosvendidos = asientosvendidos + ?, ganancias = ganancias + ? WHERE idviaje = ?";
 
         try {
             conn.setAutoCommit(false);
@@ -223,8 +224,9 @@ public class Utilidades {
                         psUpdate.setInt(1, cantidadEconomica+cantidadPremium);
                         psUpdate.setInt(2, cantidadEconomica);
                         psUpdate.setInt(3, cantidadPremium);
-                        psUpdate.setDouble(4, totalVenta);
-                        psUpdate.setInt(5, idViaje);
+                        psUpdate.setInt(4, cantidadEconomica+cantidadPremium);
+                        psUpdate.setDouble(5, totalVenta);
+                        psUpdate.setInt(6, idViaje);
                         int updated = psUpdate.executeUpdate();
                         if (updated <= 0) {
                             System.out.println("No se pudo actualizar los asientos del viaje.");
@@ -287,9 +289,9 @@ public class Utilidades {
                 }
             }
 
-            // 2. Preparar el formato de asientos "Economica / Premium"
+            // 2. Preparar el formato de asientos "Economica / Premium y la hora a la que se realiza la venta"
             String textoAsientos = venta.getAsientosClaseEconomica() + " / " + venta.getAsientosClasePremium();
-
+            java.sql.Timestamp ahora = java.sql.Timestamp.from(java.time.Instant.now());
             // 3. Insertar venta
             try (PreparedStatement ps = conn.prepareStatement(sqlInsertarVenta)) {
                 ps.setInt(1, venta.getIdCliente());
@@ -300,7 +302,7 @@ public class Utilidades {
                 ps.setInt(6, venta.getCantidadAsientos());
                 ps.setString(7, textoAsientos);
                 ps.setDouble(8, venta.getTotalVenta());
-                ps.setTimestamp(9, new Timestamp(System.currentTimeMillis()));
+                ps.setTimestamp(9, ahora);
 
                 int resultado = ps.executeUpdate();
 

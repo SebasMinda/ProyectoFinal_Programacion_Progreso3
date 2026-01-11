@@ -25,45 +25,6 @@ public class Viajes {
     public Viajes() {
     }
 
-    // Constructor sin id (para insertar nuevos viajes) usando solo 'cantidad' por compatibilidad
-    public Viajes(String destino, int cantidadTotal, double ganancias) {
-        this.destino = destino;
-        this.cantidadTotal = cantidadTotal;
-        this.asientosClaseEconomica = cantidadTotal;
-        this.asientosClasePremium = 0;
-        this.ganancias = ganancias;
-    }
-
-    // Nuevo constructor que permite especificar ambas categorías
-    public Viajes(String destino, int asientosClaseEconomica, int asientosClasePremium, double ganancias) {
-        this.destino = destino;
-        this.asientosClaseEconomica = asientosClaseEconomica;
-        this.asientosClasePremium = asientosClasePremium;
-        this.cantidadTotal = asientosClaseEconomica + asientosClasePremium;
-        this.ganancias = ganancias;
-    }
-
-    // Constructor con id, destino, cantidad, ganancias (usado por Utilidades.obtenerDatosViaje)
-    public Viajes(int id, String destino, int cantidadTotal, double ganancias) {
-        this.id = id;
-        this.destino = destino;
-        this.cantidadTotal = cantidadTotal;
-        this.asientosClaseEconomica = cantidadTotal;
-        this.asientosClasePremium = 0;
-        this.ganancias = ganancias;
-    }
-
-    // Constructor completo con origen opcional
-    public Viajes(int id, String destino, String origen, int cantidadTotal, double ganancias) {
-        this.id = id;
-        this.destino = destino;
-        this.origen = origen;
-        this.cantidadTotal = cantidadTotal;
-        this.asientosClaseEconomica = cantidadTotal;
-        this.asientosClasePremium = 0;
-        this.ganancias = ganancias;
-    }
-
     public Viajes(int id, String destino, String origen, int cantidadTotal, int asientosClaseEconomica, int asientosClasePremium, double precioEconomica, double precioPremium, double ganancias) {
         this.id = id;
         this.destino = destino;
