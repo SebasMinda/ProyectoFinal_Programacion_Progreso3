@@ -127,6 +127,7 @@ public class ProyectoFinal {
                                     do {
                                         volverALista = reservarAsientosCliente(sc, util, conn, cliente1);
                                     } while (volverALista == 1);
+                                    break;
                                 case 6:
                                     System.out.println("Lista de Ventas");
                                     util.obtenerVentas(conn);

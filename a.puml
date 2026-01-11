@@ -1,0 +1,115 @@
+@startuml
+class ProyectoFinal {
++ {static} void main(String[])
++ {static} int reservarAsientosCliente(Scanner,Utilidades,Connection,Cliente)
+}
+
+class clases.Cliente {
+- String nombre
+- String apellido
+- String identificacion
+- String email
+- int id
+- int asientosComprados
+- int asientosClaseEconomica
+- int asientosClasePremium
+- double precio
++ <<Create>> Cliente(int,String,String,String,String)
++ <<Create>> Cliente()
++ String getNombre()
++ void setNombre(String)
++ String getApellido()
++ void setApellido(String)
++ String getIdentificacion()
++ void setIdentificacion(String)
++ String getEmail()
++ void setEmail(String)
++ int getId()
++ void setId(int)
++ int getAsientosComprados()
++ void setAsientosComprados(int)
++ int getAsientosClaseEconomica()
++ void setAsientosClaseEconomica(int)
++ int getAsientosClasePremium()
++ void setAsientosClasePremium(int)
++ double getPrecio()
++ void setPrecio(double)
++ String toString()
+}
+
+
+class clases.Viajes {
+- int id
+- String destino
+- String origen
+- int cantidadTotal
+- int asientosClaseEconomica
+- int asientosClasePremium
+- double precioEconomica
+- double precioPremium
+- double ganancias
++ <<Create>> Viajes(int,String,String,int,int,int,double,double)
++ <<Create>> Viajes()
++ <<Create>> Viajes(int,String,String,int,int,int,double,double,double)
++ int getId()
++ void setId(int)
++ String getDestino()
++ void setDestino(String)
++ String getOrigen()
++ void setOrigen(String)
++ int getCantidadTotal()
++ void setCantidadTotal(int)
++ int getAsientosClaseEconomica()
++ void setAsientosClaseEconomica(int)
++ int getAsientosClasePremium()
++ void setAsientosClasePremium(int)
++ double getPrecioEconomica()
++ void setPrecioEconomica(double)
++ double getPrecioPremium()
++ void setPrecioPremium(double)
++ double getGanancias()
++ void setGanancias(double)
++ String toString()
++ String toString2()
+}
+
+
+class clases.Ventas {
+- int idVenta
+- int idCliente
+- int idViaje
+- int cantidadAsientos
+- int asientosClaseEconomica
+- int asientosClasePremium
+- double totalVenta
+- Timestamp fecha
++ <<Create>> Ventas(int,int,int,int,int,int,double,Timestamp)
++ <<Create>> Ventas(int,int,int,int,int,double)
++ int getIdCliente()
++ int getIdViaje()
++ int getCantidadAsientos()
++ int getAsientosClaseEconomica()
++ int getAsientosClasePremium()
++ double getTotalVenta()
++ String toString()
+}
+
+
+class clases.Utilidades {
++ Connection getConnection()
++ void insetarDatos(Cliente,Connection)
++ void resetearClientes(Connection)
++ void obtenerDatos(Connection)
++ void insetarDatosViaje(Viajes,Connection)
++ void obtenerDatosViaje(Connection)
++ void obtenerDatosViajeCliente(Connection)
++ void eliminaDatosViaje(int,Connection)
++ void insertarDatosVenta(int,int,int,Cliente,Connection)
++ double obtenerPrecioPorClase(int,int,Connection)
++ void insertarVenta(Ventas,Connection)
++ void obtenerVentas(Connection)
++ int asientosDisponiblesClaseEconomica(int,Connection)
++ int asientosDisponiblesClasePremium(int,Connection)
+}
+
+@enduml
