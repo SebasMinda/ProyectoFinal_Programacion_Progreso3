@@ -5,19 +5,19 @@ public class Viajes {
     private String destino;
     private String origen;
     private int cantidadTotal;
-    private int asientosEconomica;
-    private int asientosPremium;
+    private int asientosClaseEconomica;
+    private int asientosClasePremium;
     private double precioEconomica;
     private double precioPremium;
     private double ganancias;
 
-    public Viajes(int id, String destino, String origen, int cantidadTotal, int asientosEconomica, int asientosPremium, double precioEconomica, double precioPremium) {
+    public Viajes(int id, String destino, String origen, int cantidadTotal, int asientosClaseEconomica, int asientosClasePremium, double precioEconomica, double precioPremium) {
         this.id = id;
         this.destino = destino;
         this.origen = origen;
         this.cantidadTotal = cantidadTotal;
-        this.asientosEconomica = asientosEconomica;
-        this.asientosPremium = asientosPremium;
+        this.asientosClaseEconomica = asientosClaseEconomica;
+        this.asientosClasePremium = asientosClasePremium;
         this.precioEconomica = precioEconomica;
         this.precioPremium = precioPremium;
     }
@@ -29,17 +29,17 @@ public class Viajes {
     public Viajes(String destino, int cantidadTotal, double ganancias) {
         this.destino = destino;
         this.cantidadTotal = cantidadTotal;
-        this.asientosEconomica = cantidadTotal;
-        this.asientosPremium = 0;
+        this.asientosClaseEconomica = cantidadTotal;
+        this.asientosClasePremium = 0;
         this.ganancias = ganancias;
     }
 
     // Nuevo constructor que permite especificar ambas categorías
-    public Viajes(String destino, int asientosEconomica, int asientosPremium, double ganancias) {
+    public Viajes(String destino, int asientosClaseEconomica, int asientosClasePremium, double ganancias) {
         this.destino = destino;
-        this.asientosEconomica = asientosEconomica;
-        this.asientosPremium = asientosPremium;
-        this.cantidadTotal = asientosEconomica + asientosPremium;
+        this.asientosClaseEconomica = asientosClaseEconomica;
+        this.asientosClasePremium = asientosClasePremium;
+        this.cantidadTotal = asientosClaseEconomica + asientosClasePremium;
         this.ganancias = ganancias;
     }
 
@@ -48,8 +48,8 @@ public class Viajes {
         this.id = id;
         this.destino = destino;
         this.cantidadTotal = cantidadTotal;
-        this.asientosEconomica = cantidadTotal;
-        this.asientosPremium = 0;
+        this.asientosClaseEconomica = cantidadTotal;
+        this.asientosClasePremium = 0;
         this.ganancias = ganancias;
     }
 
@@ -59,18 +59,18 @@ public class Viajes {
         this.destino = destino;
         this.origen = origen;
         this.cantidadTotal = cantidadTotal;
-        this.asientosEconomica = cantidadTotal;
-        this.asientosPremium = 0;
+        this.asientosClaseEconomica = cantidadTotal;
+        this.asientosClasePremium = 0;
         this.ganancias = ganancias;
     }
 
-    public Viajes(int id, String destino, String origen, int cantidadTotal, int asientosEconomica, int asientosPremium, double precioEconomica, double precioPremium, double ganancias) {
+    public Viajes(int id, String destino, String origen, int cantidadTotal, int asientosClaseEconomica, int asientosClasePremium, double precioEconomica, double precioPremium, double ganancias) {
         this.id = id;
         this.destino = destino;
         this.origen = origen;
         this.cantidadTotal = cantidadTotal;
-        this.asientosEconomica = asientosEconomica;
-        this.asientosPremium = asientosPremium;
+        this.asientosClaseEconomica = asientosClaseEconomica;
+        this.asientosClasePremium = asientosClasePremium;
         this.precioEconomica = precioEconomica;
         this.precioPremium = precioPremium;
         this.ganancias = ganancias;
@@ -104,7 +104,7 @@ public class Viajes {
     public int getCantidadTotal() {
         // Mantener compatibilidad: cantidad es la suma de categorías
         if (cantidadTotal == 0) {
-            return asientosEconomica + asientosPremium;
+            return asientosClaseEconomica + asientosClasePremium;
         }
         return cantidadTotal;
     }
@@ -113,22 +113,22 @@ public class Viajes {
         this.cantidadTotal = cantidadTotal;
     }
 
-    public int getAsientosEconomica() {
-        return asientosEconomica;
+    public int getAsientosClaseEconomica() {
+        return asientosClaseEconomica;
     }
 
-    public void setAsientosEconomica(int asientosEconomica) {
-        this.asientosEconomica = asientosEconomica;
-        this.cantidadTotal = this.asientosEconomica + this.asientosPremium;
+    public void setAsientosClaseEconomica(int asientosClaseEconomica) {
+        this.asientosClaseEconomica = asientosClaseEconomica;
+        this.cantidadTotal = this.asientosClaseEconomica + this.asientosClasePremium;
     }
 
-    public int getAsientosPremium() {
-        return asientosPremium;
+    public int getAsientosClasePremium() {
+        return asientosClasePremium;
     }
 
-    public void setAsientosPremium(int asientosPremium) {
-        this.asientosPremium = asientosPremium;
-        this.cantidadTotal = this.asientosEconomica + this.asientosPremium;
+    public void setAsientosClasePremium(int asientosClasePremium) {
+        this.asientosClasePremium = asientosClasePremium;
+        this.cantidadTotal = this.asientosClaseEconomica + this.asientosClasePremium;
     }
 
     public double getPrecioEconomica() {
@@ -160,9 +160,9 @@ public class Viajes {
                 "id=" + id +
                 ", origen='" + origen + '\'' +
                 ", destino='" + destino + '\'' +
-                ", cantidad(total)=" + (asientosEconomica + asientosPremium) +
-                ", asientosVip=" + asientosPremium +
-                ", asientosnormales=" + asientosEconomica +
+                ", cantidad(total)=" + (asientosClaseEconomica + asientosClasePremium) +
+                ", asientosClasePremium=" + asientosClasePremium +
+                ", asientosClaseEconomica=" + asientosClaseEconomica +
                 ", precioEconomica=" + precioEconomica +
                 ", precioPremium=" + precioPremium +
                 ", ganancias=" + ganancias +
@@ -173,9 +173,9 @@ public class Viajes {
                 "id=" + id +
                 ", origen='" + origen + '\'' +
                 ", destino='" + destino + '\'' +
-                ", cantidad(total)=" + (asientosEconomica + asientosPremium) +
-                ", asientosVip=" + asientosPremium +
-                ", asientosnormales=" + asientosEconomica +
+                ", cantidad(total)=" + (asientosClaseEconomica + asientosClasePremium) +
+                ", asientosClasePremium=" + asientosClasePremium +
+                ", asientosClaseEconomica=" + asientosClaseEconomica +
                 ", precioEconomica=" + precioEconomica +
                 ", precioPremium=" + precioPremium +
                 '}'+"\n";
