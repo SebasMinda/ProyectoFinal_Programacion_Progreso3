@@ -5,6 +5,14 @@ import clases.Utilidades;
 import java.sql.Connection;
 import java.util.Scanner;
 
+/**
+ * Clase principal que contiene el menú y orquesta las operaciones del programa.
+ *
+ * Explicación simple:
+ * - Muestra un menú inicial que permite ingresar como cliente o administrador.
+ * - El cliente puede ver viajes y reservar asientos.
+ * - El admin (clave 1234) puede gestionar viajes y ver ventas/clientes.
+ */
 public class ProyectoFinal {
     public static void main(String[] args) {
         Utilidades util = new Utilidades();
@@ -152,6 +160,10 @@ public class ProyectoFinal {
         } while (opc != 3);
     }
 
+    /**
+     * Flujo para reservar asientos por parte del cliente o admin (comparten el mismo proceso).
+     * Devuelve 1 si se quiere volver a la lista de vuelos, 0 para volver al menu principal.
+     */
     public static int reservarAsientosCliente(Scanner sc, Utilidades util, Connection conn, Cliente cliente1) {
         System.out.println("Lista de Vuelos disponibles:");
         util.obtenerDatosViajeCliente(conn);

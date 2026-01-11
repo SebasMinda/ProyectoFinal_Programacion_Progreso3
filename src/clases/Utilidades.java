@@ -7,31 +7,49 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 
+/**
+ * Utilidades para manejar la conexión con la base de datos y operaciones CRUD simples.
+ * <p>
+ * Explicación simple:
+ * - Provee método para obtener la conexión a la base de datos.
+ * - Métodos para insertar/obtener clientes, viajes y ventas.
+ * - Métodos de ayuda para disponibilidad de asientos y reiniciar datos de clientes.
+ */
 public class Utilidades {
-    public Connection getConnection(){
+    /**
+     * Crea y devuelve una conexión a la base de datos MySQL usando los datos hardcodeados.
+     */
+    public Connection getConnection() {
         String url = "jdbc:mysql://localhost:3306/cliente";
         String user = "root";
         String passwd = "sasa";
 
-        try{
+        try {
             return DriverManager.getConnection(url, user, passwd);
-        } catch (Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;
     }
 
     // Inserta cliente
-    public void insetarDatos(Cliente cliente, Connection conn){
-        String sql = "INSERT INTO cliente (nombre, apellido, correo, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium, precio) VALUES (?,?,?,?,?,?,?,?)";
-        try(PreparedStatement ps = conn.prepareStatement(sql)){
 
-            ps.setString(1,cliente.getNombre());
-            ps.setString(2,cliente.getApellido());
-            ps.setString(3,cliente.getEmail());
-            ps.setString(4,cliente.getIdentificacion());
+    /**
+     * Inserta un cliente en la tabla `cliente`.
+     * - Asigna id al objeto cliente si la inserción fue exitosa (buscando por identificación).
+     * - No lanza excepciones hacia el llamador: sólo muestra la traza en caso de error.
+     */
+    public void insetarDatos(Cliente cliente, Connection conn) {
+        String sql = "INSERT INTO cliente (nombre, apellido, correo, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium, precio) VALUES (?,?,?,?,?,?,?,?)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, cliente.getNombre());
+            ps.setString(2, cliente.getApellido());
+            ps.setString(3, cliente.getEmail());
+            ps.setString(4, cliente.getIdentificacion());
             int totalAsientos = cliente.getAsientosComprados();
-            if (totalAsientos <= 0) totalAsientos = cliente.getAsientosClaseEconomica() + cliente.getAsientosClasePremium();
+            if (totalAsientos <= 0)
+                totalAsientos = cliente.getAsientosClaseEconomica() + cliente.getAsientosClasePremium();
             ps.setInt(5, totalAsientos);
             ps.setInt(6, cliente.getAsientosClaseEconomica());
             ps.setInt(7, cliente.getAsientosClasePremium());
@@ -57,11 +75,15 @@ public class Utilidades {
                 System.out.println("El Cliente no se insertó.");
             }
 
-        } catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
+    /**
+     * Resetea la tabla `cliente` (trunca y reinicia el AUTO_INCREMENT).
+     * Usar con cuidado: borra todos los datos.
+     */
     public void resetearClientes(Connection conn) {
         try (Statement stmt = conn.createStatement()) {
             // Desactivamos temporalmente las llaves foráneas para permitir truncar si hay relaciones
@@ -75,27 +97,31 @@ public class Utilidades {
     }
 
     // Listar clientes
-    public void obtenerDatos(Connection conn){
+
+    /**
+     * Muestra por consola los clientes registrados (id, nombre, apellido, correo, identificación).
+     */
+    public void obtenerDatos(Connection conn) {
         String sql = "SELECT idcliente, nombre, apellido, correo, identificacion FROM cliente";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()){
-            while(rs.next()){
-                Cliente cli = new Cliente (rs.getInt("idcliente"),
-                        rs.getString("nombre"),
-                        rs.getString("apellido"),
-                        rs.getString("correo"),
-                        rs.getString("identificacion"));
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Cliente cli = new Cliente(rs.getInt("idcliente"), rs.getString("nombre"), rs.getString("apellido"), rs.getString("correo"), rs.getString("identificacion"));
                 System.out.println(cli);
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     // Inserta viaje
-    public void insetarDatosViaje(Viajes viaje, Connection conn){
+
+    /**
+     * Inserta un viaje en la tabla `viajes`.
+     * Inicializa `asientosvendidos` en 0.
+     */
+    public void insetarDatosViaje(Viajes viaje, Connection conn) {
         String sql = "INSERT INTO viajes (origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium, asientosvendidos,ganancias) VALUES (?,?,?,?,?,?,?,?,?)";
-        try(PreparedStatement ps = conn.prepareStatement(sql)){
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, viaje.getOrigen());
             ps.setString(2, viaje.getDestino());
             ps.setInt(3, viaje.getCantidadTotal());
@@ -106,67 +132,58 @@ public class Utilidades {
             ps.setInt(8, 0);
             ps.setDouble(9, viaje.getGanancias());
             int resultado = ps.executeUpdate();
-            if(resultado > 0 ) System.out.println("El viaje se ha insertado correctamente..");
+            if (resultado > 0) System.out.println("El viaje se ha insertado correctamente..");
             else System.out.println("El viaje no se inserto..");
-        } catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     // Listar viajes (para admin)
-    public void obtenerDatosViaje(Connection conn){
+
+    /**
+     * Muestra todos los viajes con sus ganancias (para admin).
+     */
+    public void obtenerDatosViaje(Connection conn) {
         String sql = "SELECT idviaje, origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium, ganancias FROM viajes";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()){
-            while(rs.next()){
-                Viajes vjs = new Viajes (rs.getInt("idviaje"),
-                        rs.getString("origen"),
-                        rs.getString("destino"),
-                        rs.getInt("cantidadTotal"),
-                        rs.getInt("asientosClaseEconomica"),
-                        rs.getInt("asientosClasePremium"),
-                        rs.getDouble("precioEconomica"),
-                        rs.getDouble("precioPremium"),
-                        rs.getDouble("ganancias"));
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Viajes vjs = new Viajes(rs.getInt("idviaje"), rs.getString("origen"), rs.getString("destino"), rs.getInt("cantidadTotal"), rs.getInt("asientosClaseEconomica"), rs.getInt("asientosClasePremium"), rs.getDouble("precioEconomica"), rs.getDouble("precioPremium"), rs.getDouble("ganancias"));
                 System.out.println(vjs);
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     // Listar viajes para cliente (sin mostrar ganancias)
-    public void obtenerDatosViajeCliente(Connection conn){
+
+    /**
+     * Muestra los viajes sin las ganancias (para clientes normales).
+     */
+    public void obtenerDatosViajeCliente(Connection conn) {
         String sql = "SELECT idviaje, origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium FROM viajes";
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()){
-            while(rs.next()){
-                Viajes vjs1 = new Viajes (rs.getInt("idviaje"),
-                        rs.getString("origen"),
-                        rs.getString("destino"),
-                        rs.getInt("cantidadTotal"),
-                        rs.getInt("asientosClaseEconomica"),
-                        rs.getInt("asientosClasePremium"),
-                        rs.getDouble("precioEconomica"),
-                        rs.getDouble("precioPremium"));
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Viajes vjs1 = new Viajes(rs.getInt("idviaje"), rs.getString("origen"), rs.getString("destino"), rs.getInt("cantidadTotal"), rs.getInt("asientosClaseEconomica"), rs.getInt("asientosClasePremium"), rs.getDouble("precioEconomica"), rs.getDouble("precioPremium"));
                 System.out.println(vjs1.toString2());
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
     public void eliminaDatosViaje(int id, Connection conn) {
-        try (PreparedStatement psDelete = conn.prepareStatement("DELETE FROM viajes WHERE idviaje = ?")){
+        try (PreparedStatement psDelete = conn.prepareStatement("DELETE FROM viajes WHERE idviaje = ?")) {
             psDelete.setInt(1, id);
             int resultado = psDelete.executeUpdate();
             if (resultado > 0) {
                 // Reordenar id
-                try (PreparedStatement psUpdate = conn.prepareStatement("UPDATE viajes SET idviaje = idviaje - 1 WHERE idviaje > ?")){
+                try (PreparedStatement psUpdate = conn.prepareStatement("UPDATE viajes SET idviaje = idviaje - 1 WHERE idviaje > ?")) {
                     psUpdate.setInt(1, id);
                     psUpdate.executeUpdate();
                 }
-                try (Statement stmt = conn.createStatement()){
+                try (Statement stmt = conn.createStatement()) {
                     stmt.executeUpdate("ALTER TABLE viajes AUTO_INCREMENT = 1");
                 }
                 System.out.println("El viaje se ha eliminado y los índices han sido reordenados.");
@@ -180,6 +197,13 @@ public class Utilidades {
 
 
     // Reserva combinada: cantidadEconomica y cantidadPremium pueden ser 0
+
+    /**
+     * Intenta reservar asientos para un viaje, actualiza la tabla viajes (asientos y ganancias)
+     * y registra una fila en la tabla ventas.
+     * <p>
+     * Nota: este método usa transacción simple para evitar inconsistencias.
+     */
     public void insertarDatosVenta(int idViaje, int cantidadEconomica, int cantidadPremium, Cliente cliente, Connection conn) {
         // Validaciones simples
         String sqlCheck = "SELECT asientosClaseEconomica, asientosClasePremium, precioEconomica, precioPremium FROM viajes WHERE idviaje = ? FOR UPDATE";
@@ -221,10 +245,10 @@ public class Utilidades {
 
                     // Actualizar viaje
                     try (PreparedStatement psUpdate = conn.prepareStatement(sqlUpdate)) {
-                        psUpdate.setInt(1, cantidadEconomica+cantidadPremium);
+                        psUpdate.setInt(1, cantidadEconomica + cantidadPremium);
                         psUpdate.setInt(2, cantidadEconomica);
                         psUpdate.setInt(3, cantidadPremium);
-                        psUpdate.setInt(4, cantidadEconomica+cantidadPremium);
+                        psUpdate.setInt(4, cantidadEconomica + cantidadPremium);
                         psUpdate.setDouble(5, totalVenta);
                         psUpdate.setInt(6, idViaje);
                         int updated = psUpdate.executeUpdate();
@@ -238,21 +262,23 @@ public class Utilidades {
 
                     // Registrar venta
                     int idCliente = (cliente != null) ? cliente.getId() : 0;
-                    Ventas venta = new Ventas(idCliente, idViaje, cantidadEconomica+cantidadPremium, cantidadEconomica, cantidadPremium, totalVenta);
+                    Ventas venta = new Ventas(idCliente, idViaje, cantidadEconomica + cantidadPremium, cantidadEconomica, cantidadPremium, totalVenta);
                     insertarVenta(venta, conn);
 
                     conn.commit();
                     conn.setAutoCommit(true);
-                    return;
                 }
             }
 
         } catch (Exception ex) {
-            return;
         }
     }
 
     // obtener precio por clase
+
+    /**
+     * Devuelve el precio unitario según la clase (1 = economica, 2 = premium) para un viaje.
+     */
     public double obtenerPrecioPorClase(int idViaje, int tipoAsiento, Connection conn) {
         String sql = "SELECT precioEconomica, precioPremium FROM viajes WHERE idviaje = ?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -262,11 +288,18 @@ public class Utilidades {
                     return (tipoAsiento == 1) ? rs.getDouble("precioEconomica") : rs.getDouble("precioPremium");
                 }
             }
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         return -1;
     }
 
     // Inserta una venta en la tabla 'ventas' de forma simple
+
+    /**
+     * Inserta un registro en la tabla `ventas` con los datos del cliente y los asientos comprados.
+     * Formatea la columna `cEco/cPrem` como "eco / prem".
+     */
     public void insertarVenta(Ventas venta, Connection conn) {
         String sqlBuscarCliente = "SELECT nombre, apellido, identificacion FROM cliente WHERE idcliente = ?";
         // Se asume el orden: idcliente, idvuelo, nombre, apellido, identificacion, cantidadAsientos, asientos (string), total, fecha
@@ -306,13 +339,13 @@ public class Utilidades {
 
                 int resultado = ps.executeUpdate();
 
-                if(resultado > 0 ){
+                if (resultado > 0) {
                     System.out.println("El cliente se ha insertado correctamente..");
-                }else {
+                } else {
                     System.out.println("El Cliente no se inserto..");
                 }
 
-            } catch(Exception ex){
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
 
@@ -323,12 +356,16 @@ public class Utilidades {
     }
 
     // Listar ventas
+
+    /**
+     * Muestra las ventas registradas en la tabla `ventas`.
+     * El método parsea la columna `cEco/cPrem` que contiene "eco / prem".
+     */
     public void obtenerVentas(Connection conn) {
         // Ajustamos la consulta a los nombres reales de la tabla y usamos backticks para `cEco/cPrem` y idvuelo en vez de idviaje
         String sql = "SELECT idventa, idcliente, idvuelo, cantidadAsientos, `cEco/cPrem`, total, fecha FROM ventas";
 
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 int idVenta = rs.getInt("idventa");
@@ -365,25 +402,29 @@ public class Utilidades {
     }
 
     // Disponibilidades
-    public int asientosDisponiblesClaseEconomica(int idviaje, Connection conn){
+    public int asientosDisponiblesClaseEconomica(int idviaje, Connection conn) {
         String sql = "SELECT asientosClaseEconomica FROM viajes WHERE idviaje = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)){
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idviaje);
-            try (ResultSet rs = ps.executeQuery()){
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return rs.getInt("asientosClaseEconomica");
             }
-        } catch(Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         return 0;
     }
 
-    public int asientosDisponiblesClasePremium(int idviaje, Connection conn){
+    public int asientosDisponiblesClasePremium(int idviaje, Connection conn) {
         String sql = "SELECT asientosClasePremium FROM viajes WHERE idviaje = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)){
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idviaje);
-            try (ResultSet rs = ps.executeQuery()){
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return rs.getInt("asientosClasePremium");
             }
-        } catch(Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         return 0;
     }
 
