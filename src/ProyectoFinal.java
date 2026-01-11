@@ -1,6 +1,7 @@
 import clases.Cliente;
 import clases.Viajes;
 import clases.Utilidades;
+
 import java.sql.Connection;
 import java.util.Scanner;
 
@@ -41,15 +42,10 @@ public class ProyectoFinal {
                     System.out.print("Ingrese su identificacion: ");
                     String identificacion = sc.nextLine();
                     cliente1.setIdentificacion(identificacion);
-                    System.out.println("Lista de Vuelos disponibles:");
+                    int volverALista;
                     do {
-                    util.obtenerDatosViajeCliente(conn);
-                    int salir;
-                        System.out.print("Ingrese el ID del vuelo que desea reservar: ");
-                        int idVuelo = sc.nextInt();
-                        sc.nextLine();
-                        salir= reservarAsientosCliente(util, conn, sc, cliente1, idVuelo);
-                    }while (salir==2);
+                        volverALista = reservarAsientosCliente(sc, util, conn, cliente1);
+                    } while (volverALista == 1);
                     break;
                 case 2:
                     System.out.println("\nIngresando como administrador...");
@@ -166,171 +162,114 @@ public class ProyectoFinal {
         } while (opc != 3);
     }
 
-        public static int reservarAsientosCliente(Utilidades util, Connection conn, Scanner sc, Cliente cliente1, int idVuelo) {
+    public static int reservarAsientosCliente(Scanner sc, Utilidades util, Connection conn, Cliente cliente1) {
+        System.out.println("Lista de Vuelos disponibles:");
+        util.obtenerDatosViajeCliente(conn);
+        System.out.print("Ingrese el ID del vuelo que desea reservar: ");
+        int idVuelo = sc.nextInt();
+        sc.nextLine();
+        int claseInicial;
+        int opc;
+        int cantidadEconomica = 0;
+        int cantidadPremium = 0;
+        int procesoCancelado = 0;
 
-            int claseInicial;
-            int opc;
-            int cantidadEconomica = 0;
-            int cantidadPremium = 0;
-            // Variable de control para saber si el usuario decidió salir/cancelar a medio proceso
-            boolean procesoCancelado = false;
-
-                do {
-                    System.out.println("\nSeleccione la clase con la que desea iniciar la reserva:");
-                    System.out.println("1. Clase Economica");
-                    System.out.println("2. Clase Premium");
-                    System.out.print("Opcion: ");
-                    claseInicial = sc.nextInt();
-                    sc.nextLine();
-                    if (claseInicial != 1 && claseInicial != 2) {
-                        System.out.println("Opcion invalida. Intente nuevamente.");
-                    }
-                }while (claseInicial != 1 && claseInicial != 2);
-
-                if (claseInicial == 1) {
-                    // ---------------------------------------------------------
-                    // BLOQUE 1: El usuario eligió iniciar con Clase Económica
-                    // ---------------------------------------------------------
-                    int disponiblesEco = util.asientosDisponiblesClaseEconomica(idVuelo, conn);
-                    System.out.println("Asientos Clase Economica disponibles: " + disponiblesEco);
-                    System.out.print("Cuantos asientos en Clase Economica desea reservar? ");
-                    cantidadEconomica = sc.nextInt();
-                    sc.nextLine();
-                    if (cantidadEconomica > disponiblesEco) {
-                        if (disponiblesEco > 0) {
-                            System.out.println("No hay suficientes asientos en Clase Economica. Disponibles: " + disponiblesEco);
-                            while (true) {
-                                System.out.println("Seleccione una opcion:");
-                                System.out.println("1. Ajustar a los asientos disponibles (" + disponiblesEco + ")");
-                                System.out.println("2. Salir a lista de vuelos");
-                                System.out.println("3. Salir al menu principal");
-                                opc = sc.nextInt();
-                                sc.nextLine();
-                                if (opc == 1) {
-                                    cantidadEconomica = disponiblesEco;
-                                    System.out.println("Se ajustó la cantidad a " + cantidadEconomica);
-                                    break;
-                                } else if (opc == 2) {
-                                    System.out.println("Regresando a lista de vuelos...");
-                                    return 2; // Retorna 2 (volver a lista de vuelos)
-                                } else if (opc == 3) {
-                                    System.out.println("Saliendo al menu principal...");
-                                    procesoCancelado = true; // Marca cancelación para no seguir
-                                    break;
-                                } else {
-                                    System.out.println("Opcion invalida.");
-                                }
-                            }
-                        } else {
-                            System.out.println("No hay asientos en Clase Economica disponibles (0).");
-                            while (true) {
-                                System.out.println("Seleccione una opcion:");
-                                System.out.println("1. Salir a lista de vuelos");
-                                System.out.println("2. Salir al menu principal");
-                                opc = sc.nextInt();
-                                sc.nextLine();
-                                if (opc == 1) {
-                                    System.out.println("Regresando a lista de vuelos...");
-                                    return 2;
-                                } else if (opc == 2) {
-                                    System.out.println("Saliendo al menu principal...");
-                                    procesoCancelado = true;
-                                    break;
-                                } else {
-                                    System.out.println("Opcion invalida.");
-                                }
-                            }
-                        }
-                    }
-
-                    if (procesoCancelado) return 1; // Salir si canceló
-
-                    System.out.println("Desea agregar asientos en Clase Premium también?");
-                    do {
-                        System.out.println("1 = SI, 2 = NO");
-                        opc = sc.nextInt();
-                        sc.nextLine();
-                    }while (opc!=1 && opc!=2);
-                    if (opc == 1) {
-                        int disponiblesPrem = util.asientosDisponiblesClasePremium(idVuelo, conn);
-                        System.out.println("Asientos premium disponibles: " + disponiblesPrem);
-                        System.out.print("Cuantos asientos en Clase Premium desea reservar? ");
-                        cantidadPremium = sc.nextInt();
-                        sc.nextLine();
-                        if (cantidadPremium < 0) cantidadPremium = 0;
-                        if (cantidadPremium > disponiblesPrem) {
-                            if (disponiblesPrem > 0) {
-                                System.out.println("No hay suficientes asientos premium. Disponibles: " + disponiblesPrem);
-                                while (true) {
-                                    System.out.println("Seleccione una opcion:");
-                                    System.out.println("1. Ajustar a los asientos disponibles (" + disponiblesPrem + ")");
-                                    System.out.println("2. Seguir la compra sin los asientos premium");
-                                    System.out.println("3. Salir a lista de vuelos");
-                                    System.out.println("4. Salir al menu principal");
-                                    opc = sc.nextInt();
-                                    sc.nextLine();
-                                    if (opc == 1) {
-                                        cantidadPremium = disponiblesPrem;
-                                        System.out.println("Se ajustó la cantidad a " + cantidadPremium);
-                                        break;
-                                    } else if (opc == 2) {
-                                        cantidadPremium = 0;
-                                        System.out.println("Se continúa sin asientos premium.");
-                                        break;
-                                    } else if (opc == 3) {
-                                        System.out.println("Regresando a lista de vuelos...");
-                                        return 2;
-                                    } else if (opc == 4) {
-                                        System.out.println("Saliendo al menu principal...");
-                                        return 1;
-                                    } else {
-                                        System.out.println("Opcion invalida.");
-                                    }
-                                }
+        do {
+            System.out.println("\nSeleccione la clase con la que desea iniciar la reserva:");
+            System.out.println("1. Clase Economica");
+            System.out.println("2. Clase Premium");
+            System.out.print("Opcion: ");
+            claseInicial = sc.nextInt();
+            sc.nextLine();
+            if (claseInicial != 1 && claseInicial != 2) {
+                System.out.println("Opcion invalida. Intente nuevamente.");
+            }
+        } while (claseInicial != 1 && claseInicial != 2);
+        switch (claseInicial) {
+            case 1:
+                int disponiblesEco = util.asientosDisponiblesClaseEconomica(idVuelo, conn);
+                System.out.println("Asientos Clase Economica disponibles: " + disponiblesEco);
+                System.out.print("Cuantos asientos en Clase Economica desea reservar? ");
+                cantidadEconomica = sc.nextInt();
+                sc.nextLine();
+                /** Este if dice conmprueba si el cliente escribio mas asientos de los que hay si no hay no se hace nada por eso falta el else para este if
+                 * y el siguiente if comprueba si hay asientos disponibles caso contrario se va al else correspondiente */
+                if (cantidadEconomica > disponiblesEco) {
+                    if (disponiblesEco > 0) {
+                        System.out.println("No hay suficientes asientos en Clase Economica. Disponibles: " + disponiblesEco);
+                        do {
+                            System.out.println("Seleccione una opcion:");
+                            System.out.println("1. Ajustar a los asientos disponibles (" + disponiblesEco + ")");
+                            System.out.println("2. Salir a lista de vuelos");
+                            System.out.println("3. Cancelar compra y salir al menu principal");
+                            System.out.print("Seleccione una opcion: ");
+                            opc = sc.nextInt();
+                            sc.nextLine();
+                            if (opc == 1) {
+                                cantidadEconomica = disponiblesEco;
+                                System.out.println("Se ajustó la cantidad a " + cantidadEconomica);
+                            } else if (opc == 2) {
+                                System.out.println("Regresando a lista de vuelos...");
+                                return 1; // Retorna 1 para volver a pedir loop en main
+                            } else if (opc == 3) {
+                                System.out.println("Saliendo al menu principal...");
+                                procesoCancelado = 1; // Marca cancelación para no seguir
+                                break;
                             } else {
-                                System.out.println("No hay asientos premium disponibles.");
-                                while (true) {
-                                    System.out.println("Seleccione una opcion:");
-                                    System.out.println("1. Seguir compra sin los asientos");
-                                    System.out.println("2. Salir a lista de vuelos");
-                                    System.out.println("3. Salir al menu principal");
-                                    opc = sc.nextInt();
-                                    sc.nextLine();
-                                    if (opc == 1) {
-                                        cantidadPremium = 0;
-                                        System.out.println("Se continúa sin asientos premium.");
-                                        break;
-                                    } else if (opc == 2) {
-                                        System.out.println("Regresando a lista de vuelos...");
-                                        return 2;
-                                    } else if (opc == 3) {
-                                        System.out.println("Saliendo al menu principal...");
-                                        return 1;
-                                    } else {
-                                        System.out.println("Opcion invalida.");
-                                    }
-                                }
+                                System.out.println("Opcion invalida.");
                             }
-                        }
+                        } while (opc != 1 && opc != 2 && opc != 3);
+                    } else /** Este es si no hay asientos*/ {
+                        System.out.println("No hay asientos en Clase Economica disponibles (0).");
+                        do {
+                            System.out.println("Seleccione una opcion:");
+                            System.out.println("1. Salir a lista de vuelos");
+                            System.out.println("2. Cancelar compra y salir al menu principal");
+                            System.out.print("Seleccione una opcion: ");
+                            opc = sc.nextInt();
+                            sc.nextLine();
+                            if (opc == 1) {
+                                System.out.println("Regresando a lista de vuelos...");
+                                return 1;
+                            } else if (opc == 2) {
+                                System.out.println("Saliendo al menu principal...");
+                                procesoCancelado = 1;
+                                break;
+                            } else {
+                                System.out.println("Opcion invalida.");
+                            }
+                        } while (opc != 1 && opc != 2);
                     }
 
-                } else {
-                    // ---------------------------------------------------------
-                    // BLOQUE 2: El usuario eligió iniciar con Clase Premium
-                    // ---------------------------------------------------------
+                }
+                if (procesoCancelado == 1) return 0;
+
+                /**Aqui se pregunta si quiere asientos de la otra clase*/
+                System.out.println("Desea agregar asientos en Clase Premium también?");
+                do {
+                    System.out.println("1 = SI, 2 = NO");
+                    System.out.print("Seleccione una opcion: ");
+                    opc = sc.nextInt();
+                    sc.nextLine();
+                } while (opc != 1 && opc != 2);
+                if (opc == 1) {
                     int disponiblesPrem = util.asientosDisponiblesClasePremium(idVuelo, conn);
-                    System.out.println("Asientos Clase Premium disponibles: " + disponiblesPrem);
+                    System.out.println("Asientos premium disponibles: " + disponiblesPrem);
                     System.out.print("Cuantos asientos en Clase Premium desea reservar? ");
                     cantidadPremium = sc.nextInt();
                     sc.nextLine();
-                    if (cantidadPremium > disponiblesPrem) {
-                        if (disponiblesPrem > 0) {
-                            System.out.println("No hay suficientes asientos en Clase Premium. Disponibles: " + disponiblesPrem);
+                    if (cantidadPremium < 0)
+                        cantidadPremium = 0; /**es para reestablecer la cantidad de asientos a 0 por si escriben numero negativo se quede en 0*/
+                    if (cantidadPremium > disponiblesPrem) { /**Si dectecta que no hay suficientes asientos*/
+                        if (disponiblesPrem > 0) {  /** Si hay asientos disponibles*/
+                            System.out.println("No hay suficientes asientos premium. Disponibles: " + disponiblesPrem);
                             while (true) {
                                 System.out.println("Seleccione una opcion:");
                                 System.out.println("1. Ajustar a los asientos disponibles (" + disponiblesPrem + ")");
-                                System.out.println("2. Salir a lista de vuelos");
-                                System.out.println("3. Salir al menu principal");
+                                System.out.println("2. Seguir la compra sin los asientos premium");
+                                System.out.println("3. Salir a lista de vuelos");
+                                System.out.println("4. Salir al menu principal");
+                                System.out.print("Seleccione una opcion: ");
                                 opc = sc.nextInt();
                                 sc.nextLine();
                                 if (opc == 1) {
@@ -338,137 +277,205 @@ public class ProyectoFinal {
                                     System.out.println("Se ajustó la cantidad a " + cantidadPremium);
                                     break;
                                 } else if (opc == 2) {
-                                    System.out.println("Regresando a lista de vuelos...");
-                                    return 2;
-                                } else if (opc == 3) {
-                                    System.out.println("Saliendo al menu principal...");
-                                    procesoCancelado = true;
+                                    cantidadPremium = 0;
+                                    System.out.println("Se continúa sin asientos premium.");
                                     break;
+                                } else if (opc == 3) {
+                                    System.out.println("Regresando a lista de vuelos...");
+                                    return 1;
+                                } else if (opc == 4) {
+                                    System.out.println("Saliendo al menu principal...");
+                                    return 0;
                                 } else {
                                     System.out.println("Opcion invalida.");
                                 }
                             }
                         } else {
-                            System.out.println("No hay asientos en Clase Premium disponibles (0).");
+                            System.out.println("No hay asientos premium disponibles.");
                             while (true) {
                                 System.out.println("Seleccione una opcion:");
-                                System.out.println("1. Salir a lista de vuelos");
-                                System.out.println("2. Salir al menu principal");
+                                System.out.println("1. Seguir compra sin los asientos");
+                                System.out.println("2. Salir a lista de vuelos");
+                                System.out.println("3. Salir al menu principal");
+                                System.out.print("Seleccione una opcion: ");
                                 opc = sc.nextInt();
                                 sc.nextLine();
                                 if (opc == 1) {
-                                    System.out.println("Regresando a lista de vuelos...");
-                                    return 2;
-                                } else if (opc == 2) {
-                                    System.out.println("Saliendo al menu principal...");
-                                    procesoCancelado = true;
+                                    cantidadPremium = 0;
+                                    System.out.println("Se continúa sin asientos premium.");
                                     break;
+                                } else if (opc == 2) {
+                                    System.out.println("Regresando a lista de vuelos...");
+                                    return 1;
+                                } else if (opc == 3) {
+                                    System.out.println("Saliendo al menu principal...");
+                                    return 0;
                                 } else {
                                     System.out.println("Opcion invalida.");
                                 }
                             }
                         }
                     }
-
-                    if (procesoCancelado) return 1;
-
-                    System.out.println("Desea agregar asientos en Clase Economica tambien?");
-                    do {
-                        System.out.println("1 = SI, 2 = NO");
-                        opc = sc.nextInt();
-                        sc.nextLine();
-                    }while (opc!=1 && opc!=2);
-                    if (opc == 1) {
-                        int disponiblesEco2 = util.asientosDisponiblesClaseEconomica(idVuelo, conn);
-                        System.out.println("Asientos economicos disponibles: " + disponiblesEco2);
-                        System.out.print("Cuantos asientos en Clase Economica desea reservar? ");
-                        cantidadEconomica = sc.nextInt();
-                        sc.nextLine();
-                        if (cantidadEconomica < 0) cantidadEconomica = 0;
-                        if (cantidadEconomica > disponiblesEco2) {
-                            if (disponiblesEco2 > 0) {
-                                System.out.println("No hay suficientes asientos economicos. Disponibles: " + disponiblesEco2);
-                                while (true) {
-                                    System.out.println("Seleccione una opcion:");
-                                    System.out.println("1. Ajustar a los asientos disponibles (" + disponiblesEco2 + ")");
-                                    System.out.println("2. Seguir la compra sin los asientos economicos");
-                                    System.out.println("3. Salir a lista de vuelos");
-                                    System.out.println("4. Salir al menu principal");
-                                    opc = sc.nextInt();
-                                    sc.nextLine();
-                                    if (opc == 1) {
-                                        cantidadEconomica = disponiblesEco2;
-                                        System.out.println("Se ajustó la cantidad a " + cantidadEconomica);
-                                        break;
-                                    } else if (opc == 2) {
-                                        cantidadEconomica = 0;
-                                        System.out.println("Se continúa sin asientos económicos.");
-                                        break;
-                                    } else if (opc == 3) {
-                                        System.out.println("Regresando a lista de vuelos...");
-                                        return 2;
-                                    } else if (opc == 4) {
-                                        System.out.println("Saliendo al menu principal...");
-                                        return 1;
-                                    } else {
-                                        System.out.println("Opcion invalida.");
-                                    }
-                                }
+                }
+                break;
+            case 2:
+                int disponiblesPrem = util.asientosDisponiblesClasePremium(idVuelo, conn);
+                System.out.println("Asientos Clase Premium disponibles: " + disponiblesPrem);
+                System.out.print("Cuantos asientos en Clase Premium desea reservar? ");
+                cantidadPremium = sc.nextInt();
+                sc.nextLine();
+                /** Este if dice conmprueba si el cliente escribio mas asientos de los que hay si no hay no se hace nada por eso falta el else para este if
+                 * y el siguiente if comprueba si hay asientos disponibles caso contrario se va al else correspondiente */
+                if (cantidadPremium > disponiblesPrem) {
+                    if (disponiblesPrem > 0) {
+                        System.out.println("No hay suficientes asientos en Clase Premium. Disponibles: " + disponiblesPrem);
+                        do {
+                            System.out.println("Seleccione una opcion:");
+                            System.out.println("1. Ajustar a los asientos disponibles (" + disponiblesPrem + ")");
+                            System.out.println("2. Salir a lista de vuelos");
+                            System.out.println("3. Cancelar compra y salir al menu principal");
+                            System.out.print("Seleccione una opcion: ");
+                            opc = sc.nextInt();
+                            sc.nextLine();
+                            if (opc == 1) {
+                                cantidadPremium = disponiblesPrem;
+                                System.out.println("Se ajustó la cantidad a " + cantidadPremium);
+                            } else if (opc == 2) {
+                                System.out.println("Regresando a lista de vuelos...");
+                                return 1; // Retorna 1 (volver a lista de vuelos)
+                            } else if (opc == 3) {
+                                System.out.println("Saliendo al menu principal...");
+                                procesoCancelado = 1; // Marca cancelación para no seguir
+                                break;
                             } else {
-                                System.out.println("No hay asientos economicos disponibles.");
-                                while (true) {
-                                    System.out.println("Seleccione una opcion:");
-                                    System.out.println("1. Seguir compra sin los asientos");
-                                    System.out.println("2. Salir a lista de vuelos");
-                                    System.out.println("3. Salir al menu principal");
-                                    opc = sc.nextInt();
-                                    sc.nextLine();
-                                    if (opc == 1) {
-                                        cantidadEconomica = 0;
-                                        System.out.println("Se continúa sin asientos económicos.");
-                                        break;
-                                    } else if (opc == 2) {
-                                        System.out.println("Regresando a lista de vuelos...");
-                                        return 2;
-                                    } else if (opc == 3) {
-                                        System.out.println("Saliendo al menu principal...");
-                                        return 1;
-                                    } else {
-                                        System.out.println("Opcion invalida.");
-                                    }
+                                System.out.println("Opcion invalida.");
+                            }
+                        } while (opc != 1 && opc != 2 && opc != 3);
+                    } else /** Este es si no hay asientos*/ {
+                        System.out.println("No hay asientos en Clase Premium disponibles (0).");
+                        do {
+                            System.out.println("Seleccione una opcion:");
+                            System.out.println("1. Salir a lista de vuelos");
+                            System.out.println("2. Cancelar compra y salir al menu principal");
+                            System.out.print("Seleccione una opcion: ");
+                            opc = sc.nextInt();
+                            sc.nextLine();
+                            if (opc == 1) {
+                                System.out.println("Regresando a lista de vuelos...");
+                                return 1;
+                            } else if (opc == 2) {
+                                System.out.println("Saliendo al menu principal...");
+                                procesoCancelado = 1;
+                                break;
+                            } else {
+                                System.out.println("Opcion invalida.");
+                            }
+                        } while (opc != 1 && opc != 2);
+                    }
+
+                }
+                if (procesoCancelado == 1) return 0;
+
+                /**Aqui se pregunta si quiere asientos de la otra clase*/
+                System.out.println("Desea agregar asientos en Clase Economica también?");
+                do {
+                    System.out.println("1 = SI, 2 = NO");
+                    System.out.print("Seleccione una opcion: ");
+                    opc = sc.nextInt();
+                    sc.nextLine();
+                } while (opc != 1 && opc != 2);
+                if (opc == 1) {
+                    int disponiblesEco2 = util.asientosDisponiblesClaseEconomica(idVuelo, conn);
+                    System.out.println("Asientos economicos disponibles: " + disponiblesEco2);
+                    System.out.print("Cuantos asientos en Clase Economica desea reservar? ");
+                    cantidadEconomica = sc.nextInt();
+                    sc.nextLine();
+                    if (cantidadEconomica < 0)
+                        cantidadEconomica = 0; /**es para reestablecer la cantidad de asientos a 0 por si escriben numero negativo se quede en 0*/
+                    if (cantidadEconomica > disponiblesEco2) { /**Si dectecta que no hay suficientes asientos*/
+                        if (disponiblesEco2 > 0) {  /** Si hay asientos disponibles*/
+                            System.out.println("No hay suficientes asientos economicos. Disponibles: " + disponiblesEco2);
+                            while (true) {
+                                System.out.println("Seleccione una opcion:");
+                                System.out.println("1. Ajustar a los asientos disponibles (" + disponiblesEco2 + ")");
+                                System.out.println("2. Seguir la compra sin los asientos economicos");
+                                System.out.println("3. Salir a lista de vuelos");
+                                System.out.println("4. Salir al menu principal");
+                                System.out.print("Seleccione una opcion: ");
+                                opc = sc.nextInt();
+                                sc.nextLine();
+                                if (opc == 1) {
+                                    cantidadEconomica = disponiblesEco2;
+                                    System.out.println("Se ajustó la cantidad a " + cantidadEconomica);
+                                    break;
+                                } else if (opc == 2) {
+                                    cantidadEconomica = 0;
+                                    System.out.println("Se continúa sin asientos economicos.");
+                                    break;
+                                } else if (opc == 3) {
+                                    System.out.println("Regresando a lista de vuelos...");
+                                    return 1;
+                                } else if (opc == 4) {
+                                    System.out.println("Saliendo al menu principal...");
+                                    return 0;
+                                } else {
+                                    System.out.println("Opcion invalida.");
+                                }
+                            }
+                        } else {
+                            System.out.println("No hay asientos economicos disponibles.");
+                            while (true) {
+                                System.out.println("Seleccione una opcion:");
+                                System.out.println("1. Seguir compra sin los asientos");
+                                System.out.println("2. Salir a lista de vuelos");
+                                System.out.println("3. Salir al menu principal");
+                                System.out.print("Seleccione una opcion: ");
+                                opc = sc.nextInt();
+                                sc.nextLine();
+                                if (opc == 1) {
+                                    cantidadEconomica = 0;
+                                    System.out.println("Se continúa sin asientos economicos.");
+                                    break;
+                                } else if (opc == 2) {
+                                    System.out.println("Regresando a lista de vuelos...");
+                                    return 1;
+                                } else if (opc == 3) {
+                                    System.out.println("Saliendo al menu principal...");
+                                    return 0;
+                                } else {
+                                    System.out.println("Opcion invalida.");
                                 }
                             }
                         }
                     }
-
                 }
-                int totalAsientosSeleccionados = cantidadEconomica + cantidadPremium;
-                double precioEcoUnit = util.obtenerPrecioPorClase(idVuelo, 1, conn);
-                double precioPremUnit = util.obtenerPrecioPorClase(idVuelo, 2, conn);
-                double totalPagar = precioEcoUnit * cantidadEconomica + precioPremUnit * cantidadPremium;
-
-                System.out.println("\nResumen de la reserva:");
-                System.out.println("Asientos Clase Economica: " + cantidadEconomica + " Precio Unitario: " + precioEcoUnit);
-                System.out.println("Asientos Clase Premium:   " + cantidadPremium + " Precio Unitario: " + precioPremUnit);
-                System.out.println("Total asientos: " + totalAsientosSeleccionados);
-                System.out.println("Total a pagar: " + totalPagar);
-
-                System.out.print("Confirma la compra? 1 = SI, 2 = NO : ");
-                opc = sc.nextInt();
-                sc.nextLine();
-                if (opc != 1) {
-                    System.out.println("Compra cancelada.");
-                    return 1;
-                }
-                cliente1.setAsientosClaseEconomica(cantidadEconomica);
-                cliente1.setAsientosClasePremium(cantidadPremium);
-                cliente1.setAsientosComprados(totalAsientosSeleccionados);
-
-                int nuevoIdCliente = util.insetarDatos(cliente1, conn);
-                if (nuevoIdCliente <= 0) {
-                    System.out.println("No se pudo registrar el cliente. No se realiza la reserva.");
-                    return 1;
-                }
-                return 0; // Exito
+                break;
         }
+
+        int totalAsientosSeleccionados = cantidadEconomica + cantidadPremium;
+        double precioEcoUnit = util.obtenerPrecioPorClase(idVuelo, 1, conn);
+        double precioPremUnit = util.obtenerPrecioPorClase(idVuelo, 2, conn);
+        double totalPagar = precioEcoUnit * cantidadEconomica + precioPremUnit * cantidadPremium;
+
+        System.out.println("\nResumen de la reserva:");
+        System.out.println("Asientos Clase Economica: " + cantidadEconomica + " Precio Unitario: " + precioEcoUnit);
+        System.out.println("Asientos Clase Premium:   " + cantidadPremium + " Precio Unitario: " + precioPremUnit);
+        System.out.println("Total asientos: " + totalAsientosSeleccionados);
+        System.out.println("Total a pagar: " + totalPagar);
+        do {
+            System.out.print("Confirma la compra? 1 = SI, 2 = NO : ");
+            opc = sc.nextInt();
+            sc.nextLine();
+            if (opc == 2) {
+                System.out.println("Compra cancelada.");
+                return 0;
+            }
+        } while (opc != 1 && opc != 2);
+        cliente1.setAsientosClaseEconomica(cantidadEconomica);
+        cliente1.setAsientosClasePremium(cantidadPremium);
+        cliente1.setAsientosComprados(totalAsientosSeleccionados);
+        util.insetarDatos(cliente1, conn);
+        System.out.println("Venta registrada");
+        return 0;
+    }
 }

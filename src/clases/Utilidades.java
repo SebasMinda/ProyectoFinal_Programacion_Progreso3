@@ -31,7 +31,7 @@ public class Utilidades {
     // Inserta cliente y devuelve id generado o -1 en fallo
     public int insetarDatos(Cliente cliente, Connection conn){
         String sql = "INSERT INTO cliente (nombre, apellido, correo, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium) VALUES (?,?,?,?,?,?,?)";
-        try(PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
+        try(PreparedStatement ps = conn.prepareStatement(sql)){
 
             ps.setString(1,cliente.getNombre());
             ps.setString(2,cliente.getApellido());
