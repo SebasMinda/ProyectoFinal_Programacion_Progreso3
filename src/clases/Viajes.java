@@ -1,25 +1,54 @@
 package clases;
 
 /**
- * Representa un viaje (vuelo) con sus asientos y precios.
+ * Representa un viaje (vuelo) dentro del sistema.
  *
- * Explicación simple:
- * - Guarda origen, destino y cantidades de asientos por clase.
- * - Guarda precios por clase y las ganancias acumuladas del viaje.
- * - Tiene toString simplificado para mostrar información al usuario (admin/cliente).
+ * Explicación simple (pero detallada):
+ * - Guarda la información principal del vuelo: origen, destino e id.
+ * - Guarda la disponibilidad de asientos por clase: Económica y Premium.
+ * - Guarda los precios unitarios por clase para calcular el total de una compra.
+ * - Guarda las ganancias acumuladas del vuelo (lo que se ha vendido hasta el momento).
+ * - Incluye dos métodos de impresión:
+ *   - toString(): pensado para admin (incluye ganancias).
+ *   - toString2(): pensado para cliente (no muestra ganancias).
  */
 public class Viajes {
+
+    // Identificador único del viaje en la base de datos
     private int id;
+
+    // Destino del viaje (a dónde llega el vuelo)
     private String destino;
+
+    // Origen del viaje (de dónde sale el vuelo)
     private String origen;
+
+    // Total de asientos del viaje (se mantiene consistente con eco + premium)
     private int cantidadTotal;
+
+    // Asientos disponibles en clase Económica
     private int asientosClaseEconomica;
+
+    // Asientos disponibles en clase Premium
     private int asientosClasePremium;
+
+    // Precio unitario por asiento en clase Económica
     private double precioEconomica;
+
+    // Precio unitario por asiento en clase Premium
     private double precioPremium;
+
+    // Ganancias acumuladas del viaje (suma de ventas realizadas para este vuelo)
     private double ganancias;
 
-    public Viajes(int id, String destino, String origen, int cantidadTotal, int asientosClaseEconomica, int asientosClasePremium, double precioEconomica, double precioPremium) {
+    /**
+     * Constructor para crear un viaje SIN ganancias (útil cuando no se necesita mostrar ese dato).
+     * - Normalmente se usa para la vista de clientes (lista de vuelos sin ganancias).
+     */
+    public Viajes(int id, String destino, String origen, int cantidadTotal,
+                  int asientosClaseEconomica, int asientosClasePremium,
+                  double precioEconomica, double precioPremium) {
+
         this.id = id;
         this.destino = destino;
         this.origen = origen;
@@ -30,10 +59,21 @@ public class Viajes {
         this.precioPremium = precioPremium;
     }
 
+    /**
+     * Constructor vacío.
+     * - Se usa cuando primero se crea el objeto y luego se llenan los datos con setters.
+     */
     public Viajes() {
     }
 
-    public Viajes(int id, String destino, String origen, int cantidadTotal, int asientosClaseEconomica, int asientosClasePremium, double precioEconomica, double precioPremium, double ganancias) {
+    /**
+     * Constructor para crear un viaje CON ganancias (pensado para la vista de administrador).
+     */
+    public Viajes(int id, String destino, String origen, int cantidadTotal,
+                  int asientosClaseEconomica, int asientosClasePremium,
+                  double precioEconomica, double precioPremium,
+                  double ganancias) {
+
         this.id = id;
         this.destino = destino;
         this.origen = origen;
@@ -45,9 +85,13 @@ public class Viajes {
         this.ganancias = ganancias;
     }
 
-    // Getters y setters
+    // =========================
+    //      GETTERS / SETTERS
+    // =========================
+
     /**
      * Obtiene el id del viaje.
+     * - Este id generalmente viene de la base de datos.
      */
     public int getId() {
         return id;
@@ -55,6 +99,7 @@ public class Viajes {
 
     /**
      * Establece el id del viaje.
+     * - Útil cuando se lee el viaje desde la BD y se asigna al objeto.
      */
     public void setId(int id) {
         this.id = id;
@@ -89,11 +134,15 @@ public class Viajes {
     }
 
     /**
-     * Obtiene la cantidad total de asientos (eco + premium).
-     * Si cantidadTotal es 0, se calcula como la suma de las dos categorías para conservar compatibilidad.
+     * Obtiene la cantidad total de asientos del viaje.
+     *
+     * Detalle:
+     * - Para evitar inconsistencias, el total se considera como eco + premium.
+     * - Si cantidadTotal se quedó en 0 (por compatibilidad con datos viejos),
+     *   se calcula usando la suma actual de ambas clases.
      */
     public int getCantidadTotal() {
-        // Mantener compatibilidad: cantidad es la suma de categorías
+        // Mantener compatibilidad: si no viene el total guardado, lo calculamos.
         if (cantidadTotal == 0) {
             return asientosClaseEconomica + asientosClasePremium;
         }
@@ -101,62 +150,100 @@ public class Viajes {
     }
 
     /**
-     * Establece la cantidad total (no recomendado: usar setters de cada clase para mantener consistencia).
+     * Establece la cantidad total de asientos.
+     *
+     * Nota simple:
+     * - No es lo más recomendado, porque el total debería ser eco + premium.
+     * - Se mantiene por si en algún punto se necesita setear directamente desde BD.
      */
     public void setCantidadTotal(int cantidadTotal) {
         this.cantidadTotal = cantidadTotal;
     }
 
     /**
-     * Obtiene los asientos en clase economica.
+     * Obtiene los asientos disponibles en clase Económica.
      */
     public int getAsientosClaseEconomica() {
         return asientosClaseEconomica;
     }
 
     /**
-     * Establece los asientos en clase economica y recalcula cantidad total.
+     * Establece los asientos en clase Económica.
+     *
+     * Detalle:
+     * - Luego recalcula cantidadTotal para que siempre quede consistente.
      */
     public void setAsientosClaseEconomica(int asientosClaseEconomica) {
         this.asientosClaseEconomica = asientosClaseEconomica;
+
+        // Mantener coherencia del total: total = eco + premium
         this.cantidadTotal = this.asientosClaseEconomica + this.asientosClasePremium;
     }
 
     /**
-     * Obtiene los asientos en clase premium.
+     * Obtiene los asientos disponibles en clase Premium.
      */
     public int getAsientosClasePremium() {
         return asientosClasePremium;
     }
 
     /**
-     * Establece los asientos en clase premium y recalcula cantidad total.
+     * Establece los asientos en clase Premium.
+     *
+     * Detalle:
+     * - Luego recalcula cantidadTotal para que siempre quede consistente.
      */
     public void setAsientosClasePremium(int asientosClasePremium) {
         this.asientosClasePremium = asientosClasePremium;
+
+        // Mantener coherencia del total: total = eco + premium
         this.cantidadTotal = this.asientosClaseEconomica + this.asientosClasePremium;
     }
 
+    /**
+     * Obtiene el precio unitario de la clase Económica.
+     */
     public double getPrecioEconomica() {
         return precioEconomica;
     }
 
+    /**
+     * Establece el precio unitario de la clase Económica.
+     */
     public void setPrecioEconomica(double precioEconomica) {
         this.precioEconomica = precioEconomica;
     }
 
+    /**
+     * Obtiene el precio unitario de la clase Premium.
+     */
     public double getPrecioPremium() {
         return precioPremium;
     }
 
+    /**
+     * Establece el precio unitario de la clase Premium.
+     */
     public void setPrecioPremium(double precioPremium) {
         this.precioPremium = precioPremium;
     }
 
+    /**
+     * Obtiene las ganancias acumuladas del viaje.
+     * - Este valor normalmente se actualiza cuando se registran ventas.
+     */
     public double getGanancias() {
         return ganancias;
     }
 
+    // =========================
+    //      MÉTODOS DE IMPRESIÓN
+    // =========================
+
+    /**
+     * Representación completa del viaje (ideal para admin).
+     * - Incluye: asientos, precios y ganancias.
+     */
     public String toString() {
         return "Viaje{" +
                 "id=" + id +
@@ -168,8 +255,13 @@ public class Viajes {
                 ", precioEconomica=" + precioEconomica +
                 ", precioPremium=" + precioPremium +
                 ", ganancias=" + ganancias +
-                '}'+"\n";
+                '}' + "\n";
     }
+
+    /**
+     * Representación simplificada del viaje (ideal para clientes).
+     * - Igual que toString(), pero sin mostrar ganancias.
+     */
     public String toString2() {
         return "Viaje{" +
                 "id=" + id +
@@ -180,7 +272,7 @@ public class Viajes {
                 ", asientosClaseEconomica=" + asientosClaseEconomica +
                 ", precioEconomica=" + precioEconomica +
                 ", precioPremium=" + precioPremium +
-                '}'+"\n";
+                '}' + "\n";
     }
 
 }
