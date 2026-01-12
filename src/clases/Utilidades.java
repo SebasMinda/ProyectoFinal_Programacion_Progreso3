@@ -192,8 +192,8 @@ public class Utilidades {
                         rs.getInt("asientosComprados"),
                         rs.getInt("asientosClaseEconomica"),
                         rs.getInt("asientosClasePremium"),
-                        rs.getDouble("precio\n"));
-                System.out.println(cli);
+                        rs.getDouble("precio"));
+                System.out.println(cli+"\n");
             }
 
         } catch (Exception ex) {
