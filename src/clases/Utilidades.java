@@ -55,7 +55,7 @@ public class Utilidades {
      * - No lanza excepciones hacia afuera, solo imprime la traza.
      */
     public void insetarDatos(Cliente cliente, Connection conn) {
-        String sql = "INSERT INTO cliente (nombre, apellido, correo, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium, precio) VALUES (?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO cliente (nombre, apellido, email, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium, precio) VALUES (?,?,?,?,?,?,?,?)";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -176,7 +176,7 @@ public class Utilidades {
      * - Consulta campos básicos y los imprime creando un objeto Cliente por cada fila.
      */
     public void obtenerDatos(Connection conn) {
-        String sql = "SELECT idcliente, nombre, apellido, correo, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium, precio FROM cliente";
+        String sql = "SELECT idcliente, nombre, apellido, email, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium, precio FROM cliente";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -187,7 +187,7 @@ public class Utilidades {
                         rs.getInt("idcliente"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
-                        rs.getString("correo"),
+                        rs.getString("email"),
                         rs.getString("identificacion"),
                         rs.getInt("asientosComprados"),
                         rs.getInt("asientosClaseEconomica"),

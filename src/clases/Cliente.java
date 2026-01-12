@@ -66,11 +66,11 @@ public class Cliente {
     /**
      * Constructor con todos los campos el cual se usara en el metodo obtener datos de la clase utilidades para que se muestren todos los valores en la base de datos.
      */
-    public Cliente(int idcliente, String nombre, String apellido, String correo, String identificacion, int asientosComprados, int asientosClaseEconomica, int asientosClasePremium, double precio) {
+    public Cliente(int idcliente, String nombre, String apellido, String email, String identificacion, int asientosComprados, int asientosClaseEconomica, int asientosClasePremium, double precio) {
         this.id = idcliente;
         this.nombre = nombre;
         this.apellido = apellido;
-        this.email = correo;
+        this.email = email;
         this.identificacion = identificacion;
         this.asientosComprados = asientosComprados;
         this.asientosClaseEconomica = asientosClaseEconomica;
