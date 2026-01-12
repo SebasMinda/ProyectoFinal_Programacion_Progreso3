@@ -24,7 +24,10 @@ public class ProyectoFinal {
         } else {
             System.out.println("NO Conectado ...!!");
         }
-
+        //metodos usados para restablecer y hacer pruebas con los datos de la base de datos quedan como comentraio para q no se activen al ejecutar el programa
+        //util.resetearventas(conn);
+        //util.resetearviajes(conn);
+        //util.resetearClientes(conn);
         int opc;
         Cliente cliente1 = new Cliente();
         do {
