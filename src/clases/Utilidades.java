@@ -176,7 +176,7 @@ public class Utilidades {
      * - Consulta campos básicos y los imprime creando un objeto Cliente por cada fila.
      */
     public void obtenerDatos(Connection conn) {
-        String sql = "SELECT idcliente, nombre, apellido, correo, identificacion FROM cliente";
+        String sql = "SELECT idcliente, nombre, apellido, correo, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium, precio FROM cliente";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -188,8 +188,11 @@ public class Utilidades {
                         rs.getString("nombre"),
                         rs.getString("apellido"),
                         rs.getString("correo"),
-                        rs.getString("identificacion")
-                );
+                        rs.getString("identificacion"),
+                        rs.getInt("asientosComprados"),
+                        rs.getInt("asientosClaseEconomica"),
+                        rs.getInt("asientosClasePremium"),
+                        rs.getDouble("precio\n"));
                 System.out.println(cli);
             }
 
