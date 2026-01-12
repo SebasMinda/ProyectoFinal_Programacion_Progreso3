@@ -21,53 +21,32 @@ public class Ventas {
     private int idVenta;
 
     // ID del cliente que realizó la compra
-    private final int idCliente;
+    private int idCliente;
 
     // ID del viaje (vuelo) asociado a la venta
-    private final int idViaje;
+    private int idViaje;
+
+    // Datos históricos del cliente en el momento de la venta
+    private String nombre;
+    private String apellido;
+    private String identificacion;
 
     // Cantidad total de asientos comprados (eco + premium)
-    private final int cantidadAsientos;
+    private int cantidadAsientos;
 
     // Cantidad de asientos comprados en clase Económica
-    private final int asientosClaseEconomica;
+    private int asientosClaseEconomica;
 
     // Cantidad de asientos comprados en clase Premium
-    private final int asientosClasePremium;
+    private int asientosClasePremium;
 
     // Monto total pagado por la venta
-    private final double totalVenta;
+    private double totalVenta;
 
     // Fecha y hora exacta en la que se registró la venta
     private Timestamp fecha;
 
-    /**
-     * Constructor completo.
-     *
-     * Se utiliza normalmente cuando:
-     * - Se leen ventas desde la base de datos.
-     * - Ya se conoce el idVenta y la fecha registrada.
-     */
-    public Ventas(int idVenta,
-                  int idCliente,
-                  int idViaje,
-                  int cantidadAsientos,
-                  int asientosClaseEconomica,
-                  int asientosClasePremium,
-                  double totalVenta,
-                  Timestamp fecha) {
-
-        this.idVenta = idVenta;
-        this.idCliente = idCliente;
-        this.idViaje = idViaje;
-        this.cantidadAsientos = cantidadAsientos;
-        this.asientosClaseEconomica = asientosClaseEconomica;
-        this.asientosClasePremium = asientosClasePremium;
-        this.totalVenta = totalVenta;
-        this.fecha = fecha;
-    }
-
-    /**
+       /**
      * Constructor simplificado.
      *
      * Se utiliza cuando:
@@ -88,7 +67,37 @@ public class Ventas {
         this.asientosClasePremium = asientosClasePremium;
         this.totalVenta = totalVenta;
     }
+    /**
+     * Constructor completo.
+     *
+     * Se utiliza normalmente cuando:
+     * - Se leen ventas desde la base de datos.
+     * - Ya se conoce el idVenta y la fecha registrada.
+     */
+    public Ventas(int idVenta,
+                  int idCliente,
+                  int idViaje,
+                  String nombre,
+                  String apellido,
+                  String identificacion,
+                  int cantidadAsientos,
+                  int asientosClaseEconomica,
+                  int asientosClasePremium,
+                  double totalVenta,
+                  Timestamp fecha) {
 
+        this.idVenta = idVenta;
+        this.idCliente = idCliente;
+        this.idViaje = idViaje;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.identificacion = identificacion;
+        this.cantidadAsientos = cantidadAsientos;
+        this.asientosClaseEconomica = asientosClaseEconomica;
+        this.asientosClasePremium = asientosClasePremium;
+        this.totalVenta = totalVenta;
+        this.fecha = fecha;
+    }
     // =========================
     //         GETTERS
     // =========================
@@ -153,14 +162,18 @@ public class Ventas {
      * - Total pagado
      * - Fecha de la venta
      */
+
     public String toString() {
         return "Ventas{" +
                 "idVenta=" + idVenta +
                 ", idCliente=" + idCliente +
                 ", idViaje=" + idViaje +
+                ", nombre='" + nombre + '\'' +
+                ", apellido='" + apellido + '\'' +
+                ", identificacion='" + identificacion + '\'' +
                 ", cantidadAsientos=" + cantidadAsientos +
-                ", asientosClaseEconomica=" + asientosClaseEconomica +
-                ", asientosClasePremium=" + asientosClasePremium +
+                ", asientosClaseEconomica= " + asientosClaseEconomica +
+                " asientosClasePremium= " + asientosClasePremium +
                 ", totalVenta=" + totalVenta +
                 ", fecha=" + fecha +
                 '}';

@@ -226,7 +226,7 @@ public class ProyectoFinal {
 
                                 case 7:
                                     // Salir del menú admin y volver al principal
-                                    System.out.println("Volviendo al menu principal...");
+                                    System.out.println("Saliendo del menu de administrador...");
                                     break;
 
                                 default:

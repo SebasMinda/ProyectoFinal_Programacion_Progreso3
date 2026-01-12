@@ -551,7 +551,6 @@ public class Utilidades {
      *
      * Detalles:
      * - Busca el nombre/apellido/identificación del cliente para guardarlo en la venta.
-     * - Forma la cadena `cEco/cPrem` como "eco / prem" (ej: "2 / 1").
      * - Registra la fecha/hora exacta (Timestamp) del momento de compra.
      */
     public void insertarVenta(Ventas venta, Connection conn) {
@@ -560,7 +559,7 @@ public class Utilidades {
         String sqlBuscarCliente = "SELECT nombre, apellido, identificacion FROM cliente WHERE idCliente = ?";
 
         // Insert: usamos la columna idViaje en la tabla ventas para indicar el viaje asociado
-        String sqlInsertarVenta = "INSERT INTO ventas (idCliente, idViaje, nombre, apellido, identificacion, cantidadAsientos, `cEco/cPrem`, total, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlInsertarVenta = "INSERT INTO ventas (idCliente, idViaje, nombre, apellido, identificacion, cantidadAsientos, asientosClaseEconomica, asientosClasePremium, total, fecha) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             // 1) Variables que llenaremos con datos del cliente (si existe)
@@ -581,13 +580,10 @@ public class Utilidades {
                 }
             }
 
-            // 3) Preparar el formato "Eco / Prem" (ej: "3 / 0")
-            String textoAsientos = venta.getAsientosClaseEconomica() + " / " + venta.getAsientosClasePremium();
-
-            // 4) Tomar fecha/hora actual exacta
+            // 3) Tomar fecha/hora actual exacta
             Timestamp ahora = Timestamp.from(java.time.Instant.now());
 
-            // 5) Insertar el registro de venta en BD
+            // 4) Insertar el registro de venta en BD
             try (PreparedStatement ps = conn.prepareStatement(sqlInsertarVenta)) {
 
                 ps.setInt(1, venta.getIdCliente());
@@ -596,9 +592,10 @@ public class Utilidades {
                 ps.setString(4, apellido);
                 ps.setString(5, identificacion);
                 ps.setInt(6, venta.getCantidadAsientos());
-                ps.setString(7, textoAsientos);
-                ps.setDouble(8, venta.getTotalVenta());
-                ps.setTimestamp(9, ahora);
+                ps.setInt(7, venta.getAsientosClaseEconomica());
+                ps.setInt(8, venta.getAsientosClasePremium());
+                ps.setDouble(9, venta.getTotalVenta());
+                ps.setTimestamp(10, ahora);
 
                 int resultado = ps.executeUpdate();
 
@@ -619,47 +616,28 @@ public class Utilidades {
      * Muestra las ventas registradas en la tabla `ventas`.
      *
      * Detalles:
-     * - Lee la columna `cEco/cPrem` (ej: "2 / 1") y la convierte a enteros.
      * - idViaje en BD se mapea como idViaje en el objeto Ventas.
      */
     public void obtenerVentas(Connection conn) {
-        String sql = "SELECT idVenta, idCliente, idViaje, cantidadAsientos, `cEco/cPrem`, total, fecha FROM ventas";
-
-        try (PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
+        String sql = "SELECT idVenta, idCliente, idViaje, nombre, apellido, identificacion, cantidadAsientos, asientosClaseEconomica, asientosClasePremium, total, fecha FROM ventas";
+        try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                int idVenta = rs.getInt("idVenta");
-                int idCliente = rs.getInt("idCliente");
-                int idViaje = rs.getInt("idViaje");
-                int cantidad = rs.getInt("cantidadAsientos");
-                String asientosStr = rs.getString("cEco/cPrem");
-                double total = rs.getDouble("total");
-                Timestamp fecha = rs.getTimestamp("fecha");
-
-                // Convertir "eco / prem" a dos números (ej: "2 / 1" => eco=2, prem=1)
-                int eco = 0;
-                int prem = 0;
-
-                if (asientosStr != null && asientosStr.contains("/")) {
-                    try {
-                        String[] partes = asientosStr.split("/");
-                        if (partes.length >= 2) {
-                            eco = Integer.parseInt(partes[0].trim());
-                            prem = Integer.parseInt(partes[1].trim());
-                        }
-                    } catch (NumberFormatException e) {
-                        // Si falla el parseo, no rompemos el programa (se quedan en 0)
-                    }
-                }
-
-                // Crear el objeto venta con todo y mostrarlo
-                Ventas v = new Ventas(idVenta, idCliente, idViaje, cantidad, eco, prem, total, fecha);
-                System.out.println(v);
+            Ventas vnts = new Ventas(
+                    rs.getInt("idVenta"),
+                    rs.getInt("idCliente"),
+                    rs.getInt("idViaje"),
+                    rs.getString("nombre"),
+                    rs.getString("apellido"),
+                    rs.getString("identificacion"),
+                    rs.getInt("cantidadAsientos"),
+                    rs.getInt("asientosClaseEconomica"),
+                    rs.getInt("asientosClasePremium"),
+                    rs.getDouble("total"),
+                    rs.getTimestamp("fecha"));
+            System.out.println(vnts);
             }
 
         } catch (Exception ex) {
-            System.out.println("Error al obtener ventas: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
