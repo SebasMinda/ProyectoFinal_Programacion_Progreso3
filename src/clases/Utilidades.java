@@ -9,9 +9,8 @@ import java.sql.Timestamp;
 
 /**
  * Utilidades para manejar la conexión con la base de datos y operaciones CRUD simples.
- * <p>
  * Explicación simple:
- * - Provee método para obtener la conexión a la base de datos.
+ * - Provee metodo para obtener la conexión a la base de datos.
  * - Métodos para insertar/obtener clientes, viajes y ventas.
  * - Métodos de ayuda para disponibilidad de asientos y reiniciar datos de clientes.
  */
@@ -32,7 +31,7 @@ public class Utilidades {
         return null;
     }
 
-    // Inserta cliente
+    // --- MÉTODOS PARA CLIENTES ---
 
     /**
      * Inserta un cliente en la tabla `cliente`.
@@ -57,7 +56,7 @@ public class Utilidades {
 
             int resultado = ps.executeUpdate();
             if (resultado > 0) {
-                System.out.println("El Cliente se insertó correctamente.");
+                System.out.println("Venta Registrada");
 
                 // Recuperar ID para que las ventas se asocien bien
                 try (PreparedStatement psId = conn.prepareStatement("SELECT idcliente FROM cliente WHERE identificacion = ? ORDER BY idcliente DESC LIMIT 1")) {
@@ -81,16 +80,35 @@ public class Utilidades {
     }
 
     /**
-     * Resetea la tabla `cliente` (trunca y reinicia el AUTO_INCREMENT).
-     * Usar con cuidado: borra todos los datos.
+     * Resetea la tabla cliente, ventas y viaje.
+     *borra los datos y reinica el contador de id.
      */
     public void resetearClientes(Connection conn) {
         try (Statement stmt = conn.createStatement()) {
-            // Desactivamos temporalmente las llaves foráneas para permitir truncar si hay relaciones
             stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
             stmt.executeUpdate("TRUNCATE TABLE cliente");
             stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
             System.out.println("Tabla de clientes reseteada (ID reiniciado).");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    public void resetearviajes(Connection conn) {
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            stmt.executeUpdate("TRUNCATE TABLE viajes");
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+            System.out.println("Tabla de viajes reseteada (ID reiniciado).");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    public void resetearventas(Connection conn) {
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+            stmt.executeUpdate("TRUNCATE TABLE ventas");
+            stmt.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
+            System.out.println("Tabla de clientes ventas (ID reiniciado).");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -142,35 +160,51 @@ public class Utilidades {
     // Listar viajes (para admin)
 
     /**
-     * Muestra todos los viajes con sus ganancias (para admin).
+     * Muestra todos los viajes con sus ganancias (vista para administrador).
+     * return 1 si hay viajes, 0 si no hay.
      */
-    public void obtenerDatosViaje(Connection conn) {
+    public int obtenerDatosViaje(Connection conn) {
         String sql = "SELECT idviaje, origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium, ganancias FROM viajes";
         try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            int hayVuelos = 0;
             while (rs.next()) {
+                hayVuelos = 1;
                 Viajes vjs = new Viajes(rs.getInt("idviaje"), rs.getString("origen"), rs.getString("destino"), rs.getInt("cantidadTotal"), rs.getInt("asientosClaseEconomica"), rs.getInt("asientosClasePremium"), rs.getDouble("precioEconomica"), rs.getDouble("precioPremium"), rs.getDouble("ganancias"));
                 System.out.println(vjs);
             }
+            if (hayVuelos == 0) {
+                return 0; //Retorna 0 si ve que no hay vuelos
+            }
+            return hayVuelos;
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        return 0;
     }
 
     // Listar viajes para cliente (sin mostrar ganancias)
 
     /**
      * Muestra los viajes sin las ganancias (para clientes normales).
+     * return 1 si hay viajes, 0 si no hay.
      */
-    public void obtenerDatosViajeCliente(Connection conn) {
+    public int obtenerDatosViajeCliente(Connection conn) {
         String sql = "SELECT idviaje, origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium FROM viajes";
         try (PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            int hayVuelos = 0;
             while (rs.next()) {
+                hayVuelos = 1;
                 Viajes vjs1 = new Viajes(rs.getInt("idviaje"), rs.getString("origen"), rs.getString("destino"), rs.getInt("cantidadTotal"), rs.getInt("asientosClaseEconomica"), rs.getInt("asientosClasePremium"), rs.getDouble("precioEconomica"), rs.getDouble("precioPremium"));
                 System.out.println(vjs1.toString2());
             }
+            if (hayVuelos == 0) {
+                return 0; //retorna 0 si dectecta que no hay vuelos
+            }
+            return hayVuelos;
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        return 0;
     }
 
     public void eliminaDatosViaje(int id, Connection conn) {
@@ -340,9 +374,9 @@ public class Utilidades {
                 int resultado = ps.executeUpdate();
 
                 if (resultado > 0) {
-                    System.out.println("El cliente se ha insertado correctamente..");
+                    System.out.println("La venta se ha registrado correctamente..");
                 } else {
-                    System.out.println("El Cliente no se inserto..");
+                    System.out.println("La venta no se inserto..");
                 }
 
             } catch (Exception ex) {
@@ -359,7 +393,6 @@ public class Utilidades {
 
     /**
      * Muestra las ventas registradas en la tabla `ventas`.
-     * El método parsea la columna `cEco/cPrem` que contiene "eco / prem".
      */
     public void obtenerVentas(Connection conn) {
         // Ajustamos la consulta a los nombres reales de la tabla y usamos backticks para `cEco/cPrem` y idvuelo en vez de idviaje

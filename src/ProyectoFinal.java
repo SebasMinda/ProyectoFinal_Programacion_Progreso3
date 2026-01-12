@@ -28,7 +28,7 @@ public class ProyectoFinal {
         int opc;
         Cliente cliente1 = new Cliente();
         do {
-            System.out.println("-----Menu Principal-----");
+            System.out.println("\n-----Menu Principal-----");
             System.out.println("Seleccione una opcion:");
             System.out.println("1. Ingresar como cliente");
             System.out.println("2. Ingresar como administrador");
@@ -166,7 +166,12 @@ public class ProyectoFinal {
      */
     public static int reservarAsientosCliente(Scanner sc, Utilidades util, Connection conn, Cliente cliente1) {
         System.out.println("Lista de Vuelos disponibles:");
-        util.obtenerDatosViajeCliente(conn);
+        int existenVuelos = util.obtenerDatosViajeCliente(conn);
+        if (existenVuelos == 0) {
+            System.out.println("No hay vuelos disponibles actualmente.");
+            return 0; // Regresa 0 para volver al menú principal si no hay vuelos.
+        }
+
         System.out.print("Ingrese el ID del vuelo que desea reservar: ");
         int idVuelo = sc.nextInt();
         sc.nextLine();
