@@ -38,6 +38,8 @@ public class Viajes {
     // Precio unitario por asiento en clase Premium
     private double precioPremium;
 
+    private int asientosVendidos;
+
     // Ganancias acumuladas del viaje (suma de ventas realizadas para este vuelo)
     private double ganancias;
 
@@ -71,7 +73,7 @@ public class Viajes {
      */
     public Viajes(int idViaje, String destino, String origen, int cantidadTotal,
                   int asientosClaseEconomica, int asientosClasePremium,
-                  double precioEconomica, double precioPremium,
+                  double precioEconomica, double precioPremium, int asientosVendidos,
                   double ganancias) {
 
         this.idViaje = idViaje;
@@ -82,6 +84,7 @@ public class Viajes {
         this.asientosClasePremium = asientosClasePremium;
         this.precioEconomica = precioEconomica;
         this.precioPremium = precioPremium;
+        this.asientosVendidos = asientosVendidos;
         this.ganancias = ganancias;
     }
 

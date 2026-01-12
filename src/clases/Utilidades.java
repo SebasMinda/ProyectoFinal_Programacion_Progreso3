@@ -254,7 +254,7 @@ public class Utilidades {
      * - 0 si no hay viajes o si ocurre error.
      */
     public int obtenerDatosViaje(Connection conn) {
-        String sql = "SELECT idviaje, origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium, ganancias FROM viajes";
+        String sql = "SELECT idViaje, origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium, asientosVendidos, ganancias FROM viajes";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -264,17 +264,18 @@ public class Utilidades {
             while (rs.next()) {
                 hayVuelos = 1;
 
-                // Creamos el objeto Viajes con toda la info (incluye ganancias)
+                // Creamos el objeto Viajes con toda la info
                 Viajes vjs = new Viajes(
-                        rs.getInt("idviaje"),
-                        rs.getString("origen"),
-                        rs.getString("destino"),
-                        rs.getInt("cantidadTotal"),
-                        rs.getInt("asientosClaseEconomica"),
-                        rs.getInt("asientosClasePremium"),
-                        rs.getDouble("precioEconomica"),
-                        rs.getDouble("precioPremium"),
-                        rs.getDouble("ganancias")
+                rs.getInt("idViaje"),
+                rs.getString("origen"),
+                rs.getString("destino"),
+                rs.getInt("cantidadTotal"),
+                rs.getInt("asientosClasePremium"),
+                rs.getInt("asientosClaseEconomica"),
+                rs.getDouble("precioEconomica"),
+                rs.getDouble("precioPremium"),
+                rs.getInt("asientosVendidos"),
+                rs.getDouble("ganancias")
                 );
 
                 System.out.println(vjs);
@@ -302,7 +303,7 @@ public class Utilidades {
      * - 0 si no hay viajes o si ocurre error.
      */
     public int obtenerDatosViajeCliente(Connection conn) {
-        String sql = "SELECT idviaje, origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium FROM viajes";
+        String sql = "SELECT idViaje, origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium FROM viajes";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -314,7 +315,7 @@ public class Utilidades {
 
                 // Creamos el objeto Viajes sin ganancias (constructor diferente)
                 Viajes vjs1 = new Viajes(
-                        rs.getInt("idviaje"),
+                        rs.getInt("idViaje"),
                         rs.getString("origen"),
                         rs.getString("destino"),
                         rs.getInt("cantidadTotal"),
@@ -355,7 +356,7 @@ public class Utilidades {
      *   pero para un proyecto académico puede ser aceptable.
      */
     public void eliminaDatosViaje(int id, Connection conn) {
-        try (PreparedStatement psDelete = conn.prepareStatement("DELETE FROM viajes WHERE idviaje = ?")) {
+        try (PreparedStatement psDelete = conn.prepareStatement("DELETE FROM viajes WHERE idViaje = ?")) {
 
             psDelete.setInt(1, id);
             int resultado = psDelete.executeUpdate();
@@ -364,7 +365,7 @@ public class Utilidades {
 
                 // Reordenar IDs: si borraste el 3, el 4 pasa a 3, el 5 a 4, etc.
                 try (PreparedStatement psUpdate = conn.prepareStatement(
-                        "UPDATE viajes SET idviaje = idviaje - 1 WHERE idviaje > ?")) {
+                        "UPDATE viajes SET idViaje = idViaje - 1 WHERE idViaje > ?")) {
 
                     psUpdate.setInt(1, id);
                     psUpdate.executeUpdate();
@@ -406,10 +407,10 @@ public class Utilidades {
     public void insertarDatosVenta(int idViaje, int cantidadEconomica, int cantidadPremium, Cliente cliente, Connection conn) {
 
         // FOR UPDATE bloquea la fila para evitar que dos compras vendan el mismo asiento al mismo tiempo
-        String sqlCheck = "SELECT asientosClaseEconomica, asientosClasePremium, precioEconomica, precioPremium FROM viajes WHERE idviaje = ? FOR UPDATE";
+        String sqlCheck = "SELECT asientosClaseEconomica, asientosClasePremium, precioEconomica, precioPremium FROM viajes WHERE idViaje = ? FOR UPDATE";
 
         // Actualiza: cantidadTotal, asientos por clase, vendidos y ganancias en una sola instrucción
-        String sqlUpdate = "UPDATE viajes SET cantidadTotal = cantidadTotal - ?, asientosClaseEconomica = asientosClaseEconomica - ?, asientosClasePremium = asientosClasePremium - ?, asientosvendidos = asientosvendidos + ?, ganancias = ganancias + ? WHERE idviaje = ?";
+        String sqlUpdate = "UPDATE viajes SET cantidadTotal = cantidadTotal - ?, asientosClaseEconomica = asientosClaseEconomica - ?, asientosClasePremium = asientosClasePremium - ?, asientosvendidos = asientosvendidos + ?, ganancias = ganancias + ? WHERE idViaje = ?";
 
         try {
             // Inicia modo transacción manual (ya no se guardan cambios automáticamente)
@@ -520,7 +521,7 @@ public class Utilidades {
      * - -1 si no encuentra el viaje o ocurre error.
      */
     public double obtenerPrecioPorClase(int idViaje, int tipoAsiento, Connection conn) {
-        String sql = "SELECT precioEconomica, precioPremium FROM viajes WHERE idviaje = ?";
+        String sql = "SELECT precioEconomica, precioPremium FROM viajes WHERE idViaje = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idViaje);
@@ -558,8 +559,8 @@ public class Utilidades {
         // Consulta para traer información extra del cliente (se guarda en ventas como “histórico”)
         String sqlBuscarCliente = "SELECT nombre, apellido, identificacion FROM cliente WHERE idCliente = ?";
 
-        // Insert: idvuelo es el campo en ventas aunque conceptualmente es idViaje
-        String sqlInsertarVenta = "INSERT INTO ventas (idCliente, idvuelo, nombre, apellido, identificacion, cantidadAsientos, `cEco/cPrem`, total, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Insert: usamos la columna idViaje en la tabla ventas para indicar el viaje asociado
+        String sqlInsertarVenta = "INSERT INTO ventas (idCliente, idViaje, nombre, apellido, identificacion, cantidadAsientos, `cEco/cPrem`, total, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             // 1) Variables que llenaremos con datos del cliente (si existe)
@@ -619,18 +620,18 @@ public class Utilidades {
      *
      * Detalles:
      * - Lee la columna `cEco/cPrem` (ej: "2 / 1") y la convierte a enteros.
-     * - idvuelo en BD se mapea como idViaje en el objeto Ventas.
+     * - idViaje en BD se mapea como idViaje en el objeto Ventas.
      */
     public void obtenerVentas(Connection conn) {
-        String sql = "SELECT idventa, idCliente, idvuelo, cantidadAsientos, `cEco/cPrem`, total, fecha FROM ventas";
+        String sql = "SELECT idVenta, idCliente, idViaje, cantidadAsientos, `cEco/cPrem`, total, fecha FROM ventas";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                int idVenta = rs.getInt("idventa");
+                int idVenta = rs.getInt("idVenta");
                 int idCliente = rs.getInt("idCliente");
-                int idViaje = rs.getInt("idvuelo");
+                int idViaje = rs.getInt("idViaje");
                 int cantidad = rs.getInt("cantidadAsientos");
                 String asientosStr = rs.getString("cEco/cPrem");
                 double total = rs.getDouble("total");
@@ -671,11 +672,11 @@ public class Utilidades {
      * Devuelve cuántos asientos económicos quedan disponibles en un viaje.
      * - Si no encuentra el viaje o hay error, retorna 0.
      */
-    public int asientosDisponiblesClaseEconomica(int idviaje, Connection conn) {
+    public int asientosDisponiblesClaseEconomica(int idViaje, Connection conn) {
         String sql = "SELECT asientosClaseEconomica FROM viajes WHERE idViaje = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idviaje);
+            ps.setInt(1, idViaje);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return rs.getInt("asientosClaseEconomica");
@@ -692,11 +693,11 @@ public class Utilidades {
      * Devuelve cuántos asientos premium quedan disponibles en un viaje.
      * - Si no encuentra el viaje o hay error, retorna 0.
      */
-    public int asientosDisponiblesClasePremium(int idviaje, Connection conn) {
+    public int asientosDisponiblesClasePremium(int idViaje, Connection conn) {
         String sql = "SELECT asientosClasePremium FROM viajes WHERE idViaje = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idviaje);
+            ps.setInt(1, idViaje);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) return rs.getInt("asientosClasePremium");
