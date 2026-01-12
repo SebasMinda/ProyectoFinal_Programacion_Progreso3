@@ -4,7 +4,7 @@ package clases;
  * Representa un viaje (vuelo) dentro del sistema.
  *
  * Explicación simple (pero detallada):
- * - Guarda la información principal del vuelo: origen, destino e idviaje.
+ * - Guarda la información principal del vuelo: origen, destino e idViaje.
  * - Guarda la disponibilidad de asientos por clase: Económica y Premium.
  * - Guarda los precios unitarios por clase para calcular el total de una compra.
  * - Guarda las ganancias acumuladas del vuelo (lo que se ha vendido hasta el momento).
@@ -15,7 +15,7 @@ package clases;
 public class Viajes {
 
     // Identificador único del viaje en la base de datos
-    private int idviaje;
+    private int idViaje;
 
     // Destino del viaje (a dónde llega el vuelo)
     private String destino;
@@ -45,11 +45,11 @@ public class Viajes {
      * Constructor para crear un viaje SIN ganancias (útil cuando no se necesita mostrar ese dato).
      * - Normalmente se usa para la vista de clientes (lista de vuelos sin ganancias).
      */
-    public Viajes(int idviaje, String destino, String origen, int cantidadTotal,
+    public Viajes(int idViaje, String destino, String origen, int cantidadTotal,
                   int asientosClaseEconomica, int asientosClasePremium,
                   double precioEconomica, double precioPremium) {
 
-        this.idviaje = idviaje;
+        this.idViaje = idViaje;
         this.destino = destino;
         this.origen = origen;
         this.cantidadTotal = cantidadTotal;
@@ -69,12 +69,12 @@ public class Viajes {
     /**
      * Constructor para crear un viaje CON ganancias (pensado para la vista de administrador).
      */
-    public Viajes(int idviaje, String destino, String origen, int cantidadTotal,
+    public Viajes(int idViaje, String destino, String origen, int cantidadTotal,
                   int asientosClaseEconomica, int asientosClasePremium,
                   double precioEconomica, double precioPremium,
                   double ganancias) {
 
-        this.idviaje = idviaje;
+        this.idViaje = idViaje;
         this.destino = destino;
         this.origen = origen;
         this.cantidadTotal = cantidadTotal;
@@ -90,19 +90,19 @@ public class Viajes {
     // =========================
 
     /**
-     * Obtiene el idviaje del viaje.
-     * - Este idviaje generalmente viene de la base de datos.
+     * Obtiene el idViaje del viaje.
+     * - Este idViaje generalmente viene de la base de datos.
      */
-    public int getIdviaje() {
-        return idviaje;
+    public int getIdViaje() {
+        return idViaje;
     }
 
     /**
-     * Establece el idviaje del viaje.
+     * Establece el idViaje del viaje.
      * - Útil cuando se lee el viaje desde la BD y se asigna al objeto.
      */
-    public void setIdviaje(int idviaje) {
-        this.idviaje = idviaje;
+    public void setIdViaje(int idViaje) {
+        this.idViaje = idViaje;
     }
 
     /**
@@ -246,7 +246,7 @@ public class Viajes {
      */
     public String toString() {
         return "Viaje{" +
-                "idviaje=" + idviaje +
+                "idViaje=" + idViaje +
                 ", origen='" + origen + '\'' +
                 ", destino='" + destino + '\'' +
                 ", cantidad(total)=" + (asientosClaseEconomica + asientosClasePremium) +
@@ -264,7 +264,7 @@ public class Viajes {
      */
     public String toString2() {
         return "Viaje{" +
-                "idviaje=" + idviaje +
+                "idViaje=" + idViaje +
                 ", origen='" + origen + '\'' +
                 ", destino='" + destino + '\'' +
                 ", cantidad(total)=" + (asientosClaseEconomica + asientosClasePremium) +

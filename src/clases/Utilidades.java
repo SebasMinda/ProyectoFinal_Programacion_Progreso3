@@ -49,7 +49,7 @@ public class Utilidades {
      * - Guarda nombre, apellido, correo e identificación.
      * - Calcula el total de asientos comprados si no viene definido.
      * - Guarda cuántos asientos fueron económicos y cuántos premium.
-     * - Si la inserción fue exitosa, busca el idcliente generado y lo asigna al objeto Cliente.
+     * - Si la inserción fue exitosa, busca el idCliente generado y lo asigna al objeto Cliente.
      *
      * Nota:
      * - No lanza excepciones hacia afuera, solo imprime la traza.
@@ -86,14 +86,14 @@ public class Utilidades {
                 // 5) Recuperar el ID para que las ventas queden asociadas al cliente correcto
                 //    (se busca por identificacion y se toma el último id insertado con esa identificacion)
                 try (PreparedStatement psId = conn.prepareStatement(
-                        "SELECT idcliente FROM cliente WHERE identificacion = ? ORDER BY idcliente DESC LIMIT 1")) {
+                        "SELECT idCliente FROM cliente WHERE identificacion = ? ORDER BY idCliente DESC LIMIT 1")) {
 
                     psId.setString(1, cliente.getIdentificacion());
 
                     try (ResultSet rs = psId.executeQuery()) {
                         if (rs.next()) {
                             // Guardamos el id generado dentro del objeto cliente en memoria
-                            cliente.setIdcliente(rs.getInt("idcliente"));
+                            cliente.setIdCliente(rs.getInt("idCliente"));
                         }
                     }
 
@@ -176,7 +176,7 @@ public class Utilidades {
      * - Consulta campos básicos y los imprime creando un objeto Cliente por cada fila.
      */
     public void obtenerDatos(Connection conn) {
-        String sql = "SELECT idcliente, nombre, apellido, email, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium, precio FROM cliente";
+        String sql = "SELECT idCliente, nombre, apellido, email, identificacion, asientosComprados, asientosClaseEconomica, asientosClasePremium, precio FROM cliente";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -184,7 +184,7 @@ public class Utilidades {
             while (rs.next()) {
                 // Creamos el objeto Cliente con los datos de la fila actual
                 Cliente cli = new Cliente(
-                        rs.getInt("idcliente"),
+                        rs.getInt("idCliente"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
                         rs.getString("email"),
@@ -480,7 +480,7 @@ public class Utilidades {
                     }
 
                     // 6) Registrar venta en la tabla ventas
-                    int idCliente = (cliente != null) ? cliente.getIdcliente() : 0;
+                    int idCliente = (cliente != null) ? cliente.getIdCliente() : 0;
 
                     Ventas venta = new Ventas(
                             idCliente,
@@ -556,10 +556,10 @@ public class Utilidades {
     public void insertarVenta(Ventas venta, Connection conn) {
 
         // Consulta para traer información extra del cliente (se guarda en ventas como “histórico”)
-        String sqlBuscarCliente = "SELECT nombre, apellido, identificacion FROM cliente WHERE idcliente = ?";
+        String sqlBuscarCliente = "SELECT nombre, apellido, identificacion FROM cliente WHERE idCliente = ?";
 
         // Insert: idvuelo es el campo en ventas aunque conceptualmente es idViaje
-        String sqlInsertarVenta = "INSERT INTO ventas (idcliente, idvuelo, nombre, apellido, identificacion, cantidadAsientos, `cEco/cPrem`, total, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sqlInsertarVenta = "INSERT INTO ventas (idCliente, idvuelo, nombre, apellido, identificacion, cantidadAsientos, `cEco/cPrem`, total, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
             // 1) Variables que llenaremos con datos del cliente (si existe)
@@ -622,14 +622,14 @@ public class Utilidades {
      * - idvuelo en BD se mapea como idViaje en el objeto Ventas.
      */
     public void obtenerVentas(Connection conn) {
-        String sql = "SELECT idventa, idcliente, idvuelo, cantidadAsientos, `cEco/cPrem`, total, fecha FROM ventas";
+        String sql = "SELECT idventa, idCliente, idvuelo, cantidadAsientos, `cEco/cPrem`, total, fecha FROM ventas";
 
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 int idVenta = rs.getInt("idventa");
-                int idCliente = rs.getInt("idcliente");
+                int idCliente = rs.getInt("idCliente");
                 int idViaje = rs.getInt("idvuelo");
                 int cantidad = rs.getInt("cantidadAsientos");
                 String asientosStr = rs.getString("cEco/cPrem");
@@ -672,7 +672,7 @@ public class Utilidades {
      * - Si no encuentra el viaje o hay error, retorna 0.
      */
     public int asientosDisponiblesClaseEconomica(int idviaje, Connection conn) {
-        String sql = "SELECT asientosClaseEconomica FROM viajes WHERE idviaje = ?";
+        String sql = "SELECT asientosClaseEconomica FROM viajes WHERE idViaje = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idviaje);
@@ -693,7 +693,7 @@ public class Utilidades {
      * - Si no encuentra el viaje o hay error, retorna 0.
      */
     public int asientosDisponiblesClasePremium(int idviaje, Connection conn) {
-        String sql = "SELECT asientosClasePremium FROM viajes WHERE idviaje = ?";
+        String sql = "SELECT asientosClasePremium FROM viajes WHERE idViaje = ?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idviaje);
