@@ -271,7 +271,7 @@ See also com.mysql.cj.conf.PropertyDefinitions.SYSP_* variables for other test o
     </condition>
 
     <!-- Propertyset used to forward testsuite properties to JUnit tasks as system variables. -->
-    <propertyset id="junit.system.properties">
+    <propertyset idcliente="junit.system.properties">
         <propertyref prefix="com.mysql.cj.testsuite." />
     </propertyset>
 
@@ -281,7 +281,7 @@ See also com.mysql.cj.conf.PropertyDefinitions.SYSP_* variables for other test o
     </condition>
 
     <!-- Path definitions. -->
-    <path id="com.mysql.cj.extra.libs.classpath" cache="true">
+    <path idcliente="com.mysql.cj.extra.libs.classpath" cache="true">
         <fileset dir="${com.mysql.cj.extra.libs}">
             <include name="**/*.jar" />
             <exclude name="**/*-sources.jar" />
@@ -292,17 +292,17 @@ See also com.mysql.cj.conf.PropertyDefinitions.SYSP_* variables for other test o
         </fileset>
     </path>
 
-    <path id="com.mysql.cj.build.classpath">
+    <path idcliente="com.mysql.cj.build.classpath">
         <path refid="com.mysql.cj.extra.libs.classpath" />
         <pathelement location="${com.mysql.cj.build.dir.driver}" />
     </path>
 
-    <path id="com.mysql.cj.build.instrumentation.classpath">
+    <path idcliente="com.mysql.cj.build.instrumentation.classpath">
         <path refid="com.mysql.cj.build.classpath" />
         <pathelement location="${com.mysql.cj.build.compiler.output}" />
     </path>
 
-    <path id="com.mysql.cj.testsuite.build.classpath">
+    <path idcliente="com.mysql.cj.testsuite.build.classpath">
         <path refid="com.mysql.cj.extra.libs.classpath" />
         <fileset dir="${com.mysql.cj.build.dir.driver}">
             <include name="**/*.jar" />
@@ -539,7 +539,7 @@ See also com.mysql.cj.conf.PropertyDefinitions.SYSP_* variables for other test o
         </loadresource>
 
         <!-- Version replace tokens. -->
-        <filterset id="versionFilterset">
+        <filterset idcliente="versionFilterset">
             <filter token="MYSQL_CJ_MAJOR_VERSION" value="${com.mysql.cj.build.driver.version.major}" />
             <filter token="MYSQL_CJ_MINOR_VERSION" value="${com.mysql.cj.build.driver.version.minor}" />
             <filter token="MYSQL_CJ_SUBMINOR_VERSION" value="${com.mysql.cj.build.driver.version.subminor}" />
@@ -568,7 +568,7 @@ See also com.mysql.cj.conf.PropertyDefinitions.SYSP_* variables for other test o
                    else="The GNU General Public License, v2 with Universal FOSS Exception, v1.0">
             <istrue value="${com.mysql.cj.build.commercial}" />
         </condition>
-        <filterset id="licenseFilterset">
+        <filterset idcliente="licenseFilterset">
             <filter token="MYSQL_CJ_LICENSE_TYPE" value="${com.mysql.cj.build.licenseType}" />
             <filter token="MYSQL_CJ_LICENSE_NAME" value="${com.mysql.cj.build.licenseName}" />
             <filter token="MYSQL_CJ_LICENSEURL" value="${com.mysql.cj.dist.licenseUrl}" />
@@ -845,7 +845,7 @@ See also com.mysql.cj.conf.PropertyDefinitions.SYSP_* variables for other test o
         <mkdir dir="${com.mysql.cj.dist.dir.workspace}" />
         <mkdir dir="${com.mysql.cj.dist.dir.package}" />
 
-        <patternset id="exclude.files">
+        <patternset idcliente="exclude.files">
             <exclude name="**/*.nb*" />
             <exclude name="**/*.bak" />
             <exclude name="**/*.*~" />
@@ -1560,7 +1560,7 @@ See also com.mysql.cj.conf.PropertyDefinitions.SYSP_* variables for other test o
             depends="-copy-files-main, -prepare-rpm-deb-commercial-props, -prepare-rpm-deb-gpl-props">
         <exec executable="lsb_release" outputproperty="lsb_id">
             <arg value="--short" />
-            <arg value="--id" />
+            <arg value="--idcliente" />
         </exec>
         <exec executable="lsb_release" outputproperty="lsb_release">
             <arg value="--short" />

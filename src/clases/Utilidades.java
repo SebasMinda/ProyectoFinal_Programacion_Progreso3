@@ -93,7 +93,7 @@ public class Utilidades {
                     try (ResultSet rs = psId.executeQuery()) {
                         if (rs.next()) {
                             // Guardamos el id generado dentro del objeto cliente en memoria
-                            cliente.setId(rs.getInt("idcliente"));
+                            cliente.setIdcliente(rs.getInt("idcliente"));
                         }
                     }
 
@@ -480,7 +480,7 @@ public class Utilidades {
                     }
 
                     // 6) Registrar venta en la tabla ventas
-                    int idCliente = (cliente != null) ? cliente.getId() : 0;
+                    int idCliente = (cliente != null) ? cliente.getIdcliente() : 0;
 
                     Ventas venta = new Ventas(
                             idCliente,

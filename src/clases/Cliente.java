@@ -5,7 +5,7 @@ package clases;
  *
  * Explicación simple (pero completa):
  * - Guarda datos personales: nombre, apellido, identificación y correo.
- * - Guarda un id interno (normalmente viene de la base de datos).
+ * - Guarda un idcliente interno (normalmente viene de la base de datos).
  * - Guarda información de compra: asientos en Económica, asientos en Premium, total de asientos y precio total.
  * - Los setters de asientos recalculan el total para mantener consistencia.
  */
@@ -18,7 +18,7 @@ public class Cliente {
     private String email;
 
     // ID interno del cliente (por ejemplo, idcliente en la BD)
-    private int id;
+    private int idcliente;
 
     // Total de asientos comprados (eco + premium)
     private int asientosComprados;
@@ -33,13 +33,13 @@ public class Cliente {
     private double precio;
 
     /**
-     * Constructor completo para crear un cliente con id y datos personales.
+     * Constructor completo para crear un cliente con idcliente y datos personales.
      *
      * Detalle:
      * - Inicializa la parte de compra en 0 (sin asientos, sin precio).
      */
-    public Cliente(int id, String nombre, String apellido, String email, String identificacion) {
-        this.id = id;
+    public Cliente(int idcliente, String nombre, String apellido, String email, String identificacion) {
+        this.idcliente = idcliente;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
@@ -67,7 +67,7 @@ public class Cliente {
      * Constructor con todos los campos el cual se usara en el metodo obtener datos de la clase utilidades para que se muestren todos los valores en la base de datos.
      */
     public Cliente(int idcliente, String nombre, String apellido, String email, String identificacion, int asientosComprados, int asientosClaseEconomica, int asientosClasePremium, double precio) {
-        this.id = idcliente;
+        this.idcliente = idcliente;
         this.nombre = nombre;
         this.apellido = apellido;
         this.email = email;
@@ -85,6 +85,9 @@ public class Cliente {
     /**
      * Obtiene el nombre del cliente.
      */
+
+
+
     public String getNombre() {
         return nombre;
     }
@@ -140,18 +143,18 @@ public class Cliente {
     }
 
     /**
-     * Obtiene el id interno del cliente.
+     * Obtiene el idcliente interno del cliente.
      * - Normalmente se asigna cuando se inserta el cliente en la base de datos.
      */
-    public int getId() {
-        return id;
+    public int getIdcliente() {
+        return idcliente;
     }
 
     /**
-     * Establece el id interno del cliente.
+     * Establece el idcliente interno del cliente.
      */
-    public void setId(int id) {
-        this.id = id;
+    public void setIdcliente(int idcliente) {
+        this.idcliente = idcliente;
     }
 
     /**
@@ -249,7 +252,7 @@ public class Cliente {
      */
     public String toString() {
         return "Cliente{" +
-                "id=" + id +
+                "idcliente=" + idcliente +
                 ", nombre='" + nombre + '\'' +
                 ", apellido='" + apellido + '\'' +
                 ", identificacion='" + identificacion + '\'' +

@@ -1487,7 +1487,7 @@ Version 6.0.6
 
   - Fix for Bug#73053 (19022745), Endless loop in MysqlIO.clearInputStream due to Linux kernel bug.
     In the source of this issue is a Linux kernel bug described in the patch "tcp: fix FIONREAD/SIOCINQ"
-    (https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=a3374c4).
+    (https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?idcliente=a3374c4).
 
   - Fix for Bug#18869381, CHANGEUSER() FOR SHA USER RESULTS IN NULLPOINTEREXCEPTION
 
@@ -1660,7 +1660,7 @@ Version 6.0.6
 
   - Fix for Bug#17251955, ARRAYINDEXOUTOFBOUNDSEXCEPTION ON LONG MULTI-BYTE DB/USER NAMES
 
-  - Fix for Bug#50538, DatabaseMetaData.getDriverVersion() contains unexpanded ${bzr.revision-id}
+  - Fix for Bug#50538, DatabaseMetaData.getDriverVersion() contains unexpanded ${bzr.revision-idcliente}
 
 08-05-13 - Version 5.1.26
 
@@ -5347,7 +5347,7 @@ nn-nn-07 - Version 3.1.15
 
 01-13-04 - Version 3.0.10-stable
 
-    - Don't count quoted id's when inside a 'string' in PreparedStatement
+    - Don't count quoted idcliente's when inside a 'string' in PreparedStatement
       parsing (fix for BUG#1511).
 
     - 'Friendlier' exception message for PacketTooLargeException
