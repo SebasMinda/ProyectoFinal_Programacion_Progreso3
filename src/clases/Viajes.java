@@ -38,6 +38,7 @@ public class Viajes {
     // Precio unitario por asiento en clase Premium
     private double precioPremium;
 
+    // total de los asientos vendidos incluye tanto la clase Económica como la clase Premium
     private int asientosVendidos;
 
     // Ganancias acumuladas del viaje (suma de ventas realizadas para este vuelo)
@@ -69,7 +70,7 @@ public class Viajes {
     }
 
     /**
-     * Constructor para crear un viaje CON ganancias (pensado para la vista de administrador).
+     * Constructor para crear un viaje CON ganancias y los asientos vendidos en total (pensado para la vista de administrador).
      */
     public Viajes(int idViaje, String destino, String origen, int cantidadTotal,
                   int asientosClaseEconomica, int asientosClasePremium,
@@ -134,6 +135,14 @@ public class Viajes {
      */
     public void setOrigen(String origen) {
         this.origen = origen;
+    }
+
+    public int getAsientosVendidos() {
+        return asientosVendidos;
+    }
+
+    public void setAsientosVendidos(int asientosVendidos) {
+        this.asientosVendidos = asientosVendidos;
     }
 
     /**
@@ -257,6 +266,7 @@ public class Viajes {
                 ", asientosClaseEconomica=" + asientosClaseEconomica +
                 ", precioEconomica=" + precioEconomica +
                 ", precioPremium=" + precioPremium +
+                ", asientosVendidos="+ asientosVendidos+
                 ", ganancias=" + ganancias +
                 '}' + "\n";
     }

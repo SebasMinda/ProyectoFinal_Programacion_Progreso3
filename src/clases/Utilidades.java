@@ -214,7 +214,7 @@ public class Utilidades {
      * - Guarda ganancias iniciales (normalmente 0).
      */
     public void insetarDatosViaje(Viajes viaje, Connection conn) {
-        String sql = "INSERT INTO viajes (origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium, asientosvendidos,ganancias) VALUES (?,?,?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO viajes (origen, destino, cantidadTotal, asientosClasePremium, asientosClaseEconomica, precioEconomica, precioPremium, asientosVendidos,ganancias) VALUES (?,?,?,?,?,?,?,?,?)";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -278,7 +278,7 @@ public class Utilidades {
                 rs.getDouble("ganancias")
                 );
 
-                System.out.println(vjs);
+                System.out.println(vjs.toString());
             }
 
             // Si no entró al while, no hay vuelos
@@ -410,7 +410,7 @@ public class Utilidades {
         String sqlCheck = "SELECT asientosClaseEconomica, asientosClasePremium, precioEconomica, precioPremium FROM viajes WHERE idViaje = ? FOR UPDATE";
 
         // Actualiza: cantidadTotal, asientos por clase, vendidos y ganancias en una sola instrucción
-        String sqlUpdate = "UPDATE viajes SET cantidadTotal = cantidadTotal - ?, asientosClaseEconomica = asientosClaseEconomica - ?, asientosClasePremium = asientosClasePremium - ?, asientosvendidos = asientosvendidos + ?, ganancias = ganancias + ? WHERE idViaje = ?";
+        String sqlUpdate = "UPDATE viajes SET cantidadTotal = cantidadTotal - ?, asientosClaseEconomica = asientosClaseEconomica - ?, asientosClasePremium = asientosClasePremium - ?, asientosVendidos = asientosVendidos + ?, ganancias = ganancias + ? WHERE idViaje = ?";
 
         try {
             // Inicia modo transacción manual (ya no se guardan cambios automáticamente)
