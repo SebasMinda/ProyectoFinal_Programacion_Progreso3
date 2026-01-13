@@ -179,7 +179,8 @@ public class ProyectoFinal {
 
                                 case 3:
                                     // Eliminar viaje por ID
-                                    System.out.println("Eliminar Viaje");
+                                    System.out.println("\nEliminar Viaje\n");
+                                    util.obtenerDatosViaje(conn);
                                     System.out.println("Ingrese el ID del viaje a eliminar: ");
                                     int id = sc.nextInt();
 
